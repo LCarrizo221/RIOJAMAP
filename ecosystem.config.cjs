@@ -11,7 +11,7 @@ module.exports = {
       watch: false,
       env_production: {
         NODE_ENV: "production",
-        PORT: 3001,
+        PORT: 3003,
       },
       max_memory_restart: "500M",
       out_file: "/var/log/pm2/riojamap-out.log",
