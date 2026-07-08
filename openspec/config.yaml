@@ -1,11 +1,13 @@
 # RiojaMAP - SDD Configuration
-# Spec-Driven Development bootstrap for interactive map observatory
+# Spec-Driven Development — project context for interactive map observatory
 
 project:
   name: riojamap
   path: /home/lucas/docs/Code/RIOJAMAP
   description: Interactive map observatory for La Rioja province, Argentina. Tracks government works/obras and payments.
-  
+  production_url: https://riojamap.devlab1.online
+  repository: https://github.com/LCarrizo221/RIOJAMAP
+
 stack:
   frontend:
     runtime: Node.js
@@ -15,51 +17,47 @@ stack:
     styling: Tailwind CSS v4
     mapping:
       - react-leaflet (Leaflet)
-      - d3-geo
-      - d3-scale
     visualization: Recharts
     ui_icons: lucide-react
     animations: motion
-  backend_planned:
-    runtime: Node.js
+  backend:
+    runtime: Node.js 24.14.0
     framework: Express
-    orm: Prisma
+    orm: Prisma 5.22.0
     validation: Zod
-    database: PostgreSQL (Docker on WSL)
+    database: PostgreSQL 14
+    process_manager: PM2 6.0.14
+  
+infrastructure:
+  provider: DonWeb (VPS)
+  host: 179.43.127.166
+  ssh_port: 5008
+  domain: riojamap.devlab1.online
+  ssl: Let's Encrypt (via Certbot)
+  ssl_expiry: 2026-10-06
+  web_server: Nginx 1.24.0
+  backend_port: 3003
+  os: Ubuntu 24.04.4 LTS
+  backend_path: /var/www/RIOJAMAP
+  pm2_name: riojamap-backend
+  deploy_pattern: git push → VPS pull + build → PM2 restart
   
 data_sources:
   geojson_api: https://apis.datos.gob.ar/georef/api/departamentos?provincia=la%20rioja&formato=geojson&max=50
-  local_geojson: /tmp/riojamap-eval/src/data/la_rioja.json
-  data_model_origin: Google Sheets app (to be migrated to PostgreSQL via Prisma)
+  local_geojson: /home/lucas/docs/Code/RIOJAMAP/client/src/data/la_rioja.json
+  data_model_origin: PostgreSQL via Prisma (44 obras seedeadas)
   
-geojson_schema:
-  features:
-    type: Feature[]
-    properties:
-      id: number
-      departamento: string
-      cabecera: string
-      provincia: string
-      poblacion: number
-      hogares: number
-      tasa_desempleo: number
-      nivel_educativo: string
-    geometry:
-      type: MultiPolygon
-      coordinates: number[][][]
-
 architecture:
-  pattern: Component-based (React)
-  structure: 
-    - Atomic design elements present (components organized by feature)
-    - Container-presentational pattern in use
+  pattern: Component-based (React) + Express REST API
+  deployment: Nginx reverse proxy → PM2 (Express) → Prisma → PostgreSQL
   key_components:
     - App.tsx (root, state management for hover/select)
     - Map.tsx (react-leaflet GeoJSON rendering, map controls)
     - Sidebar.tsx (department info display)
-    - Dashboard.tsx (detailed view with charts)
-  state_management: React useState (local component state)
-  
+    - Dashboard.tsx (detailed view with charts + KPIs)
+    - ObraModal.tsx (CRUD form)
+    - Express API (CRUD + filtros + KPIs en /api/obras)
+
 conventions:
   typescript:
     config: tsconfig.json
@@ -67,8 +65,7 @@ conventions:
     module: ESNext
     moduleResolution: bundler
     jsx: react-jsx
-    strict: true (via noEmit, isolatedModules)
-    paths: "@/*" -> root
+    strict: true
   styling:
     framework: Tailwind CSS v4
     config: Via @tailwindcss/vite plugin
@@ -77,7 +74,6 @@ conventions:
 
 testing:
   strict_tdd: false
-  reason: No test runners configured in reference project
   current_capabilities:
     - TypeScript type checking via "lint": "tsc --noEmit"
   missing:
@@ -86,34 +82,23 @@ testing:
     - E2E testing (Playwright/Cypress)
     - API testing (Supertest)
     - Prisma testing utilities
-  recommended_future_setup:
-    frontend:
-      - Vitest (test runner)
-      - @testing-library/react (component tests)
-      - @testing-library/jest-dom (assertions)
-      - jsdom (DOM environment)
-    backend:
-      - Vitest or Jest
-      - Supertest (API testing)
-      - Prisma test utilities (@prisma/client testing patterns)
-      - Testcontainers for PostgreSQL (optional)
-    e2e:
-      - Playwright (cross-browser)
   
 persistence_mode: hybrid
 artifacts:
   openspec:
-    - openspec/config.yaml (this file)
+    - openspec/config.yaml
+    - openspec/changes/active/2026-07-08-produccion-deploy-vps/
+    - openspec/changes/archive/2026-07-08-migracion-postgresql-backend-frontend/
   engram:
-    - sdd/riojamap/project-context (observation ID: 349)
-    - sdd/riojamap/testing-capabilities (observation ID: 350)
-    
-reference_repo:
-  path: /tmp/riojamap-eval
-  source: https://github.com/LCarrizo221/Mapa-Observatorio-LA-RIOJA
-  purpose: Frontend UI reference to adapt and copy
-  
-next_steps:
-  - /sdd-explore: Explore domain model (departments, obras, payments, Google Sheets migration)
-  - /sdd-new: Create first change proposal for backend setup (Express + Prisma + PostgreSQL)
-  - /sdd-new: Frontend adaptation task (copy from reference, adapt to new structure)
+    - sdd/riojamap/project-context
+    - sdd/riojamap/testing-capabilities
+
+active_changes:
+  - name: 2026-07-08-produccion-deploy-vps
+    status: completed
+    description: Full production deployment to VPS DevLab1
+
+archived_changes:
+  - name: 2026-07-08-migracion-postgresql-backend-frontend
+    status: archived
+    description: Backend PostgreSQL + Express API + Frontend adaptation
