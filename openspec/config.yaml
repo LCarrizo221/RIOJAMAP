@@ -1,0 +1,119 @@
+# RiojaMAP - SDD Configuration
+# Spec-Driven Development bootstrap for interactive map observatory
+
+project:
+  name: riojamap
+  path: /home/lucas/docs/Code/RIOJAMAP
+  description: Interactive map observatory for La Rioja province, Argentina. Tracks government works/obras and payments.
+  
+stack:
+  frontend:
+    runtime: Node.js
+    framework: React 19
+    language: TypeScript
+    bundler: Vite 6
+    styling: Tailwind CSS v4
+    mapping:
+      - react-leaflet (Leaflet)
+      - d3-geo
+      - d3-scale
+    visualization: Recharts
+    ui_icons: lucide-react
+    animations: motion
+  backend_planned:
+    runtime: Node.js
+    framework: Express
+    orm: Prisma
+    validation: Zod
+    database: PostgreSQL (Docker on WSL)
+  
+data_sources:
+  geojson_api: https://apis.datos.gob.ar/georef/api/departamentos?provincia=la%20rioja&formato=geojson&max=50
+  local_geojson: /tmp/riojamap-eval/src/data/la_rioja.json
+  data_model_origin: Google Sheets app (to be migrated to PostgreSQL via Prisma)
+  
+geojson_schema:
+  features:
+    type: Feature[]
+    properties:
+      id: number
+      departamento: string
+      cabecera: string
+      provincia: string
+      poblacion: number
+      hogares: number
+      tasa_desempleo: number
+      nivel_educativo: string
+    geometry:
+      type: MultiPolygon
+      coordinates: number[][][]
+
+architecture:
+  pattern: Component-based (React)
+  structure: 
+    - Atomic design elements present (components organized by feature)
+    - Container-presentational pattern in use
+  key_components:
+    - App.tsx (root, state management for hover/select)
+    - Map.tsx (react-leaflet GeoJSON rendering, map controls)
+    - Sidebar.tsx (department info display)
+    - Dashboard.tsx (detailed view with charts)
+  state_management: React useState (local component state)
+  
+conventions:
+  typescript:
+    config: tsconfig.json
+    target: ES2022
+    module: ESNext
+    moduleResolution: bundler
+    jsx: react-jsx
+    strict: true (via noEmit, isolatedModules)
+    paths: "@/*" -> root
+  styling:
+    framework: Tailwind CSS v4
+    config: Via @tailwindcss/vite plugin
+    approach: Utility-first, inline className
+  alias: "@" maps to project root
+
+testing:
+  strict_tdd: false
+  reason: No test runners configured in reference project
+  current_capabilities:
+    - TypeScript type checking via "lint": "tsc --noEmit"
+  missing:
+    - Unit test framework (Jest/Vitest)
+    - Component testing (React Testing Library)
+    - E2E testing (Playwright/Cypress)
+    - API testing (Supertest)
+    - Prisma testing utilities
+  recommended_future_setup:
+    frontend:
+      - Vitest (test runner)
+      - @testing-library/react (component tests)
+      - @testing-library/jest-dom (assertions)
+      - jsdom (DOM environment)
+    backend:
+      - Vitest or Jest
+      - Supertest (API testing)
+      - Prisma test utilities (@prisma/client testing patterns)
+      - Testcontainers for PostgreSQL (optional)
+    e2e:
+      - Playwright (cross-browser)
+  
+persistence_mode: hybrid
+artifacts:
+  openspec:
+    - openspec/config.yaml (this file)
+  engram:
+    - sdd/riojamap/project-context (observation ID: 349)
+    - sdd/riojamap/testing-capabilities (observation ID: 350)
+    
+reference_repo:
+  path: /tmp/riojamap-eval
+  source: https://github.com/LCarrizo221/Mapa-Observatorio-LA-RIOJA
+  purpose: Frontend UI reference to adapt and copy
+  
+next_steps:
+  - /sdd-explore: Explore domain model (departments, obras, payments, Google Sheets migration)
+  - /sdd-new: Create first change proposal for backend setup (Express + Prisma + PostgreSQL)
+  - /sdd-new: Frontend adaptation task (copy from reference, adapt to new structure)
