@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -52,7 +53,26 @@ const seedData = [
 async function main() {
   console.log('Starting seed...');
 
-  // Clear existing data
+  // Create admin user if not exists
+  const adminEmail = 'admin@riojamap.com';
+  const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+
+  if (!existingAdmin) {
+    const passwordHash = await bcrypt.hash('admin123456', 12);
+    await prisma.user.create({
+      data: {
+        email: adminEmail,
+        passwordHash,
+        name: 'Admin',
+        role: 'ADMIN',
+      },
+    });
+    console.log('✅ Admin user created');
+  } else {
+    console.log('Admin user already exists');
+  }
+
+  // Clear existing obras data
   await prisma.obra.deleteMany({});
   console.log('Cleared existing obras');
 
