@@ -1,9 +1,8 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { useState, useMemo, useCallback } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { AuthGuard } from './components/auth/AuthGuard';
+import { LoginPage } from './components/auth/LoginPage';
 import InteractiveMap from './components/Map.js';
 import Sidebar from './components/Sidebar.js';
 import Dashboard from './components/Dashboard.js';
@@ -17,7 +16,7 @@ interface Toast {
   message: string;
 }
 
-export default function App() {
+function MapApp() {
   const [hoveredDept, setHoveredDept] = useState<any | null>(null);
   const [selectedDept, setSelectedDept] = useState<any | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -35,7 +34,6 @@ export default function App() {
     const id = `${Date.now()}-${Math.random()}`;
     setToasts(prev => [...prev, { id, type, message }]);
     
-    // Auto-dismiss after 3 seconds
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 3000);
@@ -85,7 +83,6 @@ export default function App() {
         ) : (
           <Sidebar 
             department={hoveredDept}
-            // Could pass obrasCount and montoTotal here if we want to show them on hover
           />
         )}
       </main>
@@ -103,5 +100,22 @@ export default function App() {
 
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={
+            <AuthGuard>
+              <MapApp />
+            </AuthGuard>
+          } />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
