@@ -6,8 +6,6 @@ interface DepartmentProperties {
   id: number;
   nombre?: string;
   departamento: string;
-  poblacion?: number;
-  hogares?: number;
 }
 
 interface SidebarProps {

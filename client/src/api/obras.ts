@@ -25,7 +25,9 @@ export async function getObras(filters?: FilterOptions): Promise<ObrasListRespon
   if (filters?.municipio) params.append('municipio', filters.municipio);
   if (filters?.referente) params.append('referente', filters.referente);
   
-  const response = await fetch(`${API_BASE}/obras?${params.toString()}`);
+  const response = await fetch(`${API_BASE}/obras?${params.toString()}`, {
+    credentials: 'include'
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch obras');
   }
@@ -40,7 +42,9 @@ export async function getObraKpis(filters?: FilterOptions): Promise<KpisResponse
   if (filters?.municipio) params.append('municipio', filters.municipio);
   if (filters?.referente) params.append('referente', filters.referente);
   
-  const response = await fetch(`${API_BASE}/obras/kpis?${params.toString()}`);
+  const response = await fetch(`${API_BASE}/obras/kpis?${params.toString()}`, {
+    credentials: 'include'
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch KPIs');
   }
@@ -51,7 +55,9 @@ export async function getObraKpis(filters?: FilterOptions): Promise<KpisResponse
  * Get single obra by ID
  */
 export async function getObraById(id: number): Promise<Obra> {
-  const response = await fetch(`${API_BASE}/obras/${id}`);
+  const response = await fetch(`${API_BASE}/obras/${id}`, {
+    credentials: 'include'
+  });
   if (!response.ok) {
     if (response.status === 404) {
       throw new Error('Obra not found');
@@ -71,6 +77,7 @@ export async function createObra(data: ObraInput): Promise<Obra> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
+    credentials: 'include',
   });
   if (!response.ok) {
     const error = await response.json();
@@ -89,6 +96,7 @@ export async function updateObra(id: number, data: Partial<ObraInput>): Promise<
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
+    credentials: 'include',
   });
   if (!response.ok) {
     const error = await response.json();
@@ -103,6 +111,7 @@ export async function updateObra(id: number, data: Partial<ObraInput>): Promise<
 export async function deleteObra(id: number): Promise<void> {
   const response = await fetch(`${API_BASE}/obras/${id}`, {
     method: 'DELETE',
+    credentials: 'include',
   });
   if (!response.ok) {
     if (response.status === 404) {
