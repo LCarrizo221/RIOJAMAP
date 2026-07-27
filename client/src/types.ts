@@ -38,8 +38,6 @@ export interface DepartmentFeature {
     departamento: string;
     cabecera?: string;
     provincia?: string;
-    poblacion?: number;
-    hogares?: number;
     tasa_desempleo?: number;
     nivel_educativo?: string;
   };

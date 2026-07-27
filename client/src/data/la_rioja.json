@@ -7,8 +7,6 @@
         "departamento": "CORONEL FELIPE VARELA",
         "cabecera": "VILLA UNION",
         "provincia": "LA RIOJA",
-        "poblacion": 6232,
-        "hogares": 1883,
         "tasa_desempleo": 5.7,
         "nivel_educativo": "Universitario Incompleto"
       },
@@ -5987,8 +5985,6 @@
         "departamento": "CASTRO BARROS",
         "cabecera": "AMINGA",
         "provincia": "LA RIOJA",
-        "poblacion": 18703,
-        "hogares": 5962,
         "tasa_desempleo": 6.1,
         "nivel_educativo": "Terciario Incompleto"
       },
@@ -6379,8 +6375,6 @@
         "departamento": "SANAGASTA",
         "cabecera": "VILLA SANAGASTA",
         "provincia": "LA RIOJA",
-        "poblacion": 22295,
-        "hogares": 8678,
         "tasa_desempleo": 6.6,
         "nivel_educativo": "Terciario Incompleto"
       },
@@ -7359,8 +7353,6 @@
         "departamento": "GENERAL OCAMPO",
         "cabecera": "VILLA SANTA RITA DE CATUNA",
         "provincia": "LA RIOJA",
-        "poblacion": 13709,
-        "hogares": 4253,
         "tasa_desempleo": 7.9,
         "nivel_educativo": "Secundario Incompleto"
       },
@@ -7507,8 +7499,6 @@
         "departamento": "CHILECITO",
         "cabecera": "CHILECITO",
         "provincia": "LA RIOJA",
-        "poblacion": 54117,
-        "hogares": 17825,
         "tasa_desempleo": 5.9,
         "nivel_educativo": "Universitario Incompleto"
       },
@@ -8915,8 +8905,6 @@
         "departamento": "GENERAL ANGEL V. PEÑALOZA",
         "cabecera": "TAMA",
         "provincia": "LA RIOJA",
-        "poblacion": 17542,
-        "hogares": 5925,
         "tasa_desempleo": 6,
         "nivel_educativo": "Terciario Incompleto"
       },
@@ -9999,8 +9987,6 @@
         "departamento": "GENERAL BELGRANO",
         "cabecera": "OLTA",
         "provincia": "LA RIOJA",
-        "poblacion": 12965,
-        "hogares": 4959,
         "tasa_desempleo": 5.5,
         "nivel_educativo": "Universitario Incompleto"
       },
@@ -10351,8 +10337,6 @@
         "departamento": "CHAMICAL",
         "cabecera": "CHAMICAL",
         "provincia": "LA RIOJA",
-        "poblacion": 15172,
-        "hogares": 4621,
         "tasa_desempleo": 6.6,
         "nivel_educativo": "Secundario Completo"
       },
@@ -10751,8 +10735,6 @@
         "departamento": "INDEPENDENCIA",
         "cabecera": "PATQUIA",
         "provincia": "LA RIOJA",
-        "poblacion": 16238,
-        "hogares": 5197,
         "tasa_desempleo": 8.3,
         "nivel_educativo": "Secundario Completo"
       },
@@ -13455,8 +13437,6 @@
         "departamento": "GENERAL JUAN F. QUIROGA",
         "cabecera": "MALANZAN",
         "provincia": "LA RIOJA",
-        "poblacion": 16168,
-        "hogares": 4963,
         "tasa_desempleo": 4.4,
         "nivel_educativo": "Secundario Incompleto"
       },
@@ -14287,8 +14267,6 @@
         "departamento": "ROSARIO VERA PEÑALOZA",
         "cabecera": "CHEPES",
         "provincia": "LA RIOJA",
-        "poblacion": 23983,
-        "hogares": 7125,
         "tasa_desempleo": 7.9,
         "nivel_educativo": "Secundario Completo"
       },
@@ -14839,8 +14817,6 @@
         "departamento": "GENERAL SAN MARTIN",
         "cabecera": "ULAPES",
         "provincia": "LA RIOJA",
-        "poblacion": 13638,
-        "hogares": 4135,
         "tasa_desempleo": 5,
         "nivel_educativo": "Secundario Completo"
       },
@@ -16079,8 +16055,6 @@
         "departamento": "VINCHINA",
         "cabecera": "VILLA SAN JOSE DE VINCHINA",
         "provincia": "LA RIOJA",
-        "poblacion": 13420,
-        "hogares": 4253,
         "tasa_desempleo": 6.4,
         "nivel_educativo": "Terciario Completo"
       },
@@ -27407,8 +27381,6 @@
         "departamento": "FAMATINA",
         "cabecera": "FAMATINA",
         "provincia": "LA RIOJA",
-        "poblacion": 15648,
-        "hogares": 4918,
         "tasa_desempleo": 6,
         "nivel_educativo": "Terciario Incompleto"
       },
@@ -29255,8 +29227,6 @@
         "departamento": "SAN BLAS DE LOS SAUCES",
         "cabecera": "SAN BLAS",
         "provincia": "LA RIOJA",
-        "poblacion": 20556,
-        "hogares": 6152,
         "tasa_desempleo": 8.6,
         "nivel_educativo": "Terciario Completo"
       },
@@ -30559,8 +30529,6 @@
         "departamento": "ARAUCO",
         "cabecera": "AIMOGASTA",
         "provincia": "LA RIOJA",
-        "poblacion": 17483,
-        "hogares": 5569,
         "tasa_desempleo": 5.8,
         "nivel_educativo": "Terciario Incompleto"
       },
@@ -31607,8 +31575,6 @@
         "departamento": "GENERAL LAMADRID",
         "cabecera": "VILLA CASTELLI",
         "provincia": "LA RIOJA",
-        "poblacion": 6608,
-        "hogares": 2068,
         "tasa_desempleo": 4.3,
         "nivel_educativo": "Secundario Completo"
       },
@@ -36215,8 +36181,6 @@
         "departamento": "CAPITAL",
         "cabecera": "LA RIOJA",
         "provincia": "LA RIOJA",
-        "poblacion": 212063,
-        "hogares": 68045,
         "tasa_desempleo": 6,
         "nivel_educativo": "Terciario Completo"
       },
