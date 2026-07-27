@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import obrasRoutes from './routes/obras.js';
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 
@@ -18,8 +20,10 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/obras', obrasRoutes);
 
 // Health check
