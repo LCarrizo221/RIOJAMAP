@@ -1,13 +1,13 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AuthGuard } from './components/auth/AuthGuard';
 import { LoginPage } from './components/auth/LoginPage';
+import UserMenu from './components/auth/UserMenu';
 import InteractiveMap from './components/Map.js';
 import Sidebar from './components/Sidebar.js';
 import Dashboard from './components/Dashboard.js';
 import ToastContainer from './components/Toast.js';
-import geoData from './data/la_rioja.json';
 import type { ToastType } from './components/Toast.js';
 
 interface Toast {
@@ -20,15 +20,6 @@ function MapApp() {
   const [hoveredDept, setHoveredDept] = useState<any | null>(null);
   const [selectedDept, setSelectedDept] = useState<any | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const totalPoblacion = useMemo(() => 
-    geoData.features.reduce((acc: number, f: any) => acc + (f.properties.poblacion || 0), 0), 
-    []
-  );
-  const totalHogares = useMemo(() => 
-    geoData.features.reduce((acc: number, f: any) => acc + (f.properties.hogares || 0), 0), 
-    []
-  );
 
   const addToast = useCallback((type: ToastType, message: string) => {
     const id = `${Date.now()}-${Math.random()}`;
@@ -50,19 +41,7 @@ function MapApp() {
           <p className="text-amber-500 font-mono text-xs tracking-widest uppercase mb-1">Sistema de Información Geográfica</p>
           <h1 className="text-2xl lg:text-4xl font-serif tracking-tight font-light">Observatorio La Rioja</h1>
         </div>
-        <div className="text-left sm:text-right mt-4 sm:mt-0">
-          <p className="text-slate-400 text-xs uppercase tracking-wider mb-1 font-semibold">Total Provincial</p>
-          <div className="flex gap-4 lg:gap-8">
-            <div className="flex flex-col">
-              <span className="text-xl lg:text-2xl font-mono text-slate-100">{totalPoblacion.toLocaleString('es-AR')}</span>
-              <span className="text-[10px] text-slate-500 uppercase tracking-tighter">Habitantes</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl lg:text-2xl font-mono text-slate-100">{totalHogares.toLocaleString('es-AR')}</span>
-              <span className="text-[10px] text-slate-500 uppercase tracking-tighter">Hogares</span>
-            </div>
-          </div>
-        </div>
+        <UserMenu />
       </header>
       
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
