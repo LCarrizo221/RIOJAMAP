@@ -8,6 +8,22 @@ project:
   production_url: https://riojamap.devlab1.online
   repository: https://github.com/LCarrizo221/RIOJAMAP
 
+context: |
+  Tech stack: React 19 + Vite 6 (frontend), Express + Prisma + PostgreSQL (backend)
+  Architecture: Component-based React + REST API with JWT auth
+  Testing: TypeScript type checking via "lint": "tsc --noEmit" (strict_tdd: false)
+  Style: Tailwind CSS v4 utility-first, dark theme (#09090b/#0c0c0e with amber accents)
+  Git state: 4 commits ahead of origin/main (8853f36..8791c35)
+  Auth work (2026-07-27): user-auth, role-authorization, auth-state, frontend-header specs implemented
+
+  Completed SDD changes:
+  - 2026-07-08-produccion-deploy-vps: VPS deployment (archived)
+  - 2026-07-08-migracion-postgresql-backend-frontend: PostgreSQL migration (archived)
+  - 2026-07-27-auth-y-login: Authentication system (archived)
+  - 2026-08-05-colaboracion-paralela: Parallel collaboration governance (archived)
+
+  Active changes: None
+
 stack:
   frontend:
     runtime: Node.js
@@ -70,7 +86,7 @@ conventions:
     framework: Tailwind CSS v4
     config: Via @tailwindcss/vite plugin
     approach: Utility-first, inline className
-  alias: "@" maps to project root
+  alias: "@" # maps to project root
 
 testing:
   strict_tdd: false
@@ -87,18 +103,31 @@ persistence_mode: hybrid
 artifacts:
   openspec:
     - openspec/config.yaml
-    - openspec/changes/active/2026-07-08-produccion-deploy-vps/
     - openspec/changes/archive/2026-07-08-migracion-postgresql-backend-frontend/
+    - openspec/changes/archive/2026-08-05-colaboracion-paralela/
+    - openspec/specs/obra-kpis/
+    - openspec/specs/obra-crud/
+    - openspec/specs/obra-filtering/
+    - openspec/specs/frontend-obra-display/
+    - openspec/specs/parallel-collaboration/
   engram:
     - sdd/riojamap/project-context
     - sdd/riojamap/testing-capabilities
-
-active_changes:
-  - name: 2026-07-08-produccion-deploy-vps
-    status: completed
-    description: Full production deployment to VPS DevLab1
+    - sdd/auth-y-login/specs/user-auth
+    - sdd/auth-y-login/specs/role-authorization
+    - sdd/auth-y-login/specs/auth-state
+    - sdd/auth-y-login/specs/frontend-header
 
 archived_changes:
+  - name: 2026-07-08-produccion-deploy-vps
+    status: archived
+    description: Full production deployment to VPS DevLab1
   - name: 2026-07-08-migracion-postgresql-backend-frontend
     status: archived
     description: Backend PostgreSQL + Express API + Frontend adaptation
+  - name: 2026-07-27-auth-y-login
+    status: archived
+    description: Authentication system with JWT, user management, role-based access control
+  - name: 2026-08-05-colaboracion-paralela
+    status: archived
+    description: "Parallel collaboration model for 2 developers (Lucas: frontend, colleague: schema)"
