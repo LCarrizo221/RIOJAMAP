@@ -1,4 +1,11 @@
-export interface Obra {
+// Re-export types from contracts for backward compatibility
+// These interfaces now come from Zod schema inference
+export type { Obra, KpisResponse, CreateObraInput, UpdateObraInput, ObraInput } from './contracts/obra.js';
+export type { User } from './contracts/auth.js';
+
+// Keep original hand-written interfaces for reference (future work)
+// These are deprecated in favor of Zod-inferred types
+export interface ObraLegacy {
   id: number;
   fecha: string;
   municipio: string;
@@ -13,7 +20,7 @@ export interface Obra {
   updatedAt: string;
 }
 
-export interface ObraInput {
+export interface ObraInputLegacy {
   fecha: string;
   municipio: string;
   referente: string;
@@ -24,7 +31,7 @@ export interface ObraInput {
   montoParcial: number;
 }
 
-export interface KpisResponse {
+export interface KpisResponseLegacy {
   total: number;
   parcial: number;
   pendiente: number;

@@ -21,6 +21,7 @@ context: |
   - 2026-07-08-migracion-postgresql-backend-frontend: PostgreSQL migration (archived)
   - 2026-07-27-auth-y-login: Authentication system (archived)
   - 2026-08-05-colaboracion-paralela: Parallel collaboration governance (archived)
+  - 2026-08-05-frontend-contract-validation: Frontend contract validation with Zod + MSW (archived)
 
   Active changes: None
 
@@ -105,11 +106,15 @@ artifacts:
     - openspec/config.yaml
     - openspec/changes/archive/2026-07-08-migracion-postgresql-backend-frontend/
     - openspec/changes/archive/2026-08-05-colaboracion-paralela/
+    - openspec/changes/archive/2026-08-05-frontend-contract-validation/
     - openspec/specs/obra-kpis/
     - openspec/specs/obra-crud/
     - openspec/specs/obra-filtering/
     - openspec/specs/frontend-obra-display/
     - openspec/specs/parallel-collaboration/
+    - openspec/specs/contract-validation/
+    - openspec/specs/mock-service-worker/
+    - openspec/specs/client-testing/
   engram:
     - sdd/riojamap/project-context
     - sdd/riojamap/testing-capabilities

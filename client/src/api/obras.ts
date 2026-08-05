@@ -1,16 +1,13 @@
 import type { Obra, ObraInput, KpisResponse } from '../types.js';
+import { validateResponse } from './validate.js';
+import { 
+  ObrasListResponseSchema, 
+  KpisResponseSchema, 
+  ObraSchema,
+  type ObrasListResponse as ObrasListResponseContract
+} from '../contracts/obra.js';
 
 const API_BASE = '/api';
-
-export interface ObrasListResponse {
-  data: Obra[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
 
 export interface FilterOptions {
   municipio?: string;
@@ -20,7 +17,7 @@ export interface FilterOptions {
 /**
  * Get all obras with optional filters
  */
-export async function getObras(filters?: FilterOptions): Promise<ObrasListResponse> {
+export async function getObras(filters?: FilterOptions): Promise<ObrasListResponseContract> {
   const params = new URLSearchParams();
   if (filters?.municipio) params.append('municipio', filters.municipio);
   if (filters?.referente) params.append('referente', filters.referente);
@@ -31,7 +28,8 @@ export async function getObras(filters?: FilterOptions): Promise<ObrasListRespon
   if (!response.ok) {
     throw new Error('Failed to fetch obras');
   }
-  return response.json();
+  const data = await response.json();
+  return validateResponse(data, ObrasListResponseSchema);
 }
 
 /**
@@ -48,7 +46,8 @@ export async function getObraKpis(filters?: FilterOptions): Promise<KpisResponse
   if (!response.ok) {
     throw new Error('Failed to fetch KPIs');
   }
-  return response.json();
+  const data = await response.json();
+  return validateResponse(data, KpisResponseSchema) as KpisResponse;
 }
 
 /**
@@ -64,7 +63,8 @@ export async function getObraById(id: number): Promise<Obra> {
     }
     throw new Error('Failed to fetch obra');
   }
-  return response.json();
+  const data = await response.json();
+  return validateResponse(data, ObraSchema);
 }
 
 /**
@@ -83,7 +83,8 @@ export async function createObra(data: ObraInput): Promise<Obra> {
     const error = await response.json();
     throw new Error(error.error || 'Failed to create obra');
   }
-  return response.json();
+  const responseData = await response.json();
+  return validateResponse(responseData, ObraSchema);
 }
 
 /**
@@ -102,7 +103,8 @@ export async function updateObra(id: number, data: Partial<ObraInput>): Promise<
     const error = await response.json();
     throw new Error(error.error || 'Failed to update obra');
   }
-  return response.json();
+  const responseData = await response.json();
+  return validateResponse(responseData, ObraSchema);
 }
 
 /**

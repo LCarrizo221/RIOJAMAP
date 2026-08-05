@@ -1,11 +1,10 @@
+import { validateResponse } from './validate.js';
+import { UserSchema, type User } from '../contracts/auth.js';
+
 const API_BASE = '/api';
 
-export interface User {
-  id: number;
-  email: string;
-  name: string;
-  role: 'ADMIN' | 'USER';
-}
+// Re-export User type for backward compatibility
+export type { User };
 
 export async function loginApi(email: string, password: string): Promise<void> {
   const response = await fetch(`${API_BASE}/auth/login`, {
@@ -18,6 +17,16 @@ export async function loginApi(email: string, password: string): Promise<void> {
   if (!response.ok) {
     const err = await response.json();
     throw new Error(err.error || 'Login failed');
+  }
+  
+  // Backend returns void on success (200/204), but validate if it returns data
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    const data = await response.json();
+    // If backend returns user data, validate it
+    if (data && typeof data === 'object') {
+      validateResponse(data, UserSchema);
+    }
   }
 }
 
@@ -37,5 +46,6 @@ export async function getMe(): Promise<User> {
     throw new Error('Not authenticated');
   }
   
-  return response.json();
+  const data = await response.json();
+  return validateResponse(data, UserSchema);
 }

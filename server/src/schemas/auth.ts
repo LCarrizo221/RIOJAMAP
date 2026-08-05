@@ -10,3 +10,17 @@ export const loginSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(1, 'La contraseña es requerida'),
 });
+
+/**
+ * User response schema - canonical contract for authenticated user responses.
+ * Used by GET /api/auth/me and login responses.
+ * Mirror this schema in client/src/contracts/auth.ts
+ */
+export const UserResponseSchema = z.object({
+  id: z.number(),
+  email: z.string().email(),
+  name: z.string(),
+  role: z.enum(['ADMIN', 'USER'])
+});
+
+export type UserResponse = z.infer<typeof UserResponseSchema>;
