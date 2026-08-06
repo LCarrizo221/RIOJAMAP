@@ -127,31 +127,31 @@ Chain strategy: pending
 
 ## Phase 4: API Layer
 
-- [ ] **T14** — Install npm dependencies: `npm install multer exceljs express-rate-limit` and `npm install --save-dev @types/multer` in `server/`
+- [x] **T14** — Install npm dependencies: `npm install multer exceljs express-rate-limit` and `npm install --save-dev @types/multer` in `server/`
   - **Files**: `server/package.json`, `server/package-lock.json`
   - **Dependencies**: none (can run in parallel with T7–T13)
   - **Est. lines**: ~0 authored
   - **Test**: `import multer from 'multer'` and `import ExcelJS from 'exceljs'` compile without errors
 
-- [ ] **T15** — Create `server/src/middleware/rateLimit.ts`; export `generalApiLimiter` via `express-rate-limit` (windowMs: 60 000, max: 20, standardHeaders: true)
+- [x] **T15** — Create `server/src/middleware/rateLimit.ts`; export `generalApiLimiter` via `express-rate-limit` (windowMs: 60 000, max: 20, standardHeaders: true)
   - **Files**: `server/src/middleware/rateLimit.ts`
   - **Dependencies**: T14
   - **Est. lines**: ~20
   - **Test**: `generalApiLimiter` is an Express middleware function; 21st request from same IP within 1 minute returns 429
 
-- [ ] **T16** — Create `server/src/controllers/importController.ts`; export `uploadFile`, `getExpedienteVersions`, `getPersonVersions`, `getReportesHistorico` handlers; thin: delegates to `ImportExcelService`; all 4xx/5xx return `{ error, code, details? }`; `uploadFile` reads `req.file.buffer` from multer; construct services at handler call time (load `Person` records via `prisma.person.findMany()` on first request, cache in module scope)
+- [x] **T16** — Create `server/src/controllers/importController.ts`; export `uploadFile`, `getExpedienteVersions`, `getPersonVersions`, `getReportesHistorico` handlers; thin: delegates to `ImportExcelService`; all 4xx/5xx return `{ error, code, details? }`; `uploadFile` reads `req.file.buffer` from multer; construct services at handler call time (load `Person` records via `prisma.person.findMany()` on first request, cache in module scope)
   - **Files**: `server/src/controllers/importController.ts`
   - **Dependencies**: T13, T7
   - **Est. lines**: ~110
   - **Test**: Mock `ImportExcelService.importFile` to return a valid `ImportResult`; call `uploadFile(req, res)`; assert `res.json` receives `{ success: true, summary: {...} }`
 
-- [ ] **T17** — Create `server/src/routes/import.ts`; configure `multer(memoryStorage, { fileFilter: .xlsx only, limits: { fileSize: 10 * 1024 * 1024 } })`; wire 4 routes: `POST /` → `multer → authenticate → generalApiLimiter → uploadFile`; `GET /expedientes/:numero/versions` → `authenticate → getExpedienteVersions`; `GET /person/:personId/table/:tableName/versions` → `authenticate → getPersonVersions`; `GET /reportes-historico` → `authenticate → getReportesHistorico`
+- [x] **T17** — Create `server/src/routes/import.ts`; configure `multer(memoryStorage, { fileFilter: .xlsx only, limits: { fileSize: 10 * 1024 * 1024 } })`; wire 4 routes: `POST /` → `multer → authenticate → generalApiLimiter → uploadFile`; `GET /expedientes/:numero/versions` → `authenticate → getExpedienteVersions`; `GET /person/:personId/table/:tableName/versions` → `authenticate → getPersonVersions`; `GET /reportes-historico` → `authenticate → getReportesHistorico`
   - **Files**: `server/src/routes/import.ts`
   - **Dependencies**: T15, T16
   - **Est. lines**: ~55
   - **Test**: `POST /api/import` without JWT cookie returns 401; with non-.xlsx file returns 400
 
-- [ ] **T18** — Register import router in `server/src/index.ts`; add `app.use('/api/import', importRouter)` after existing routes
+- [x] **T18** — Register import router in `server/src/index.ts`; add `app.use('/api/import', importRouter)` after existing routes
   - **Files**: `server/src/index.ts`
   - **Dependencies**: T17
   - **Est. lines**: ~5
@@ -167,7 +167,7 @@ Chain strategy: pending
   - **Est. lines**: ~65
   - **Test**: `ImportResponseContract.parse(mockValidResponse)` passes; `ImportResponseContract.strict().parse({...extraField})` throws `ZodError`
 
-- [ ] **T20** — Create `client/src/api/import.ts`; implement `postImport(file: File, importDate?: string): Promise<ImportResponse>`, `getVersionsByExpediente(numero: string)`, `getPersonVersions(personId: number, tableName: string)`, `getReportesHistorico(params)` using fetch API + `ImportResponseContract.parse()`; consistent with `api/obras.ts` pattern
+- [x] **T20** — Create `client/src/api/import.ts`; implement `postImport(file: File, importDate?: string): Promise<ImportResponse>`, `getVersionsByExpediente(numero: string)`, `getPersonVersions(personId: number, tableName: string)`, `getReportesHistorico(params)` using fetch API + `ImportResponseContract.parse()`; consistent with `api/obras.ts` pattern
   - **Files**: `client/src/api/import.ts`
   - **Dependencies**: T19
   - **Est. lines**: ~90
