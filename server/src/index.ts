@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import obrasRoutes from './routes/obras.js';
 import authRoutes from './routes/auth.js';
+import importRoutes from './routes/import.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/obras', obrasRoutes);
+app.use('/api/import', importRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {
