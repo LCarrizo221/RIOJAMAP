@@ -12,6 +12,9 @@
     "db:generate": "prisma generate",
     "seed": "tsx seed.ts"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed-persons.ts"
+  },
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",

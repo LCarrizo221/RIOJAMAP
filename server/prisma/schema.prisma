@@ -35,3 +35,339 @@ model Obra {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
+
+// ─────────────────────────────────────────────────────────────
+// Excel Import Feature — Person + 6 Type1 + 8 Type2 + Audit
+// ─────────────────────────────────────────────────────────────
+
+// T1 — Person model (registry for person-specific tables)
+model Person {
+  id               Int              @id @default(autoincrement())
+  name             String
+  table_name_alias String           @unique
+  createdAt        DateTime         @default(now())
+
+  piniHerrera      PiniHerrera[]
+  gabiPedrali      GabiPedrali[]
+  teresitaMadera   TeresitaMadera[]
+  florenciaLopez   FlorenciaLopez[]
+  guryCaceres      GuryCaceres[]
+  dirigentes       Dirigentes[]
+  romina           Romina[]
+  misael           Misael[]
+}
+
+// T2 — Type 1 generic tables (expediente @unique → UPSERT on re-import)
+
+model Expedientes {
+  id            Int      @id @default(autoincrement())
+  expediente    String   @unique
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([version])
+  @@index([createdAt])
+}
+
+model ConveniosMunic {
+  id            Int      @id @default(autoincrement())
+  expediente    String   @unique
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([version])
+}
+
+model DeudasEXPTES {
+  id            Int      @id @default(autoincrement())
+  expediente    String   @unique
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([version])
+}
+
+model Instituciones {
+  id            Int      @id @default(autoincrement())
+  expediente    String   @unique
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([version])
+}
+
+model Intendentes026 {
+  id            Int      @id @default(autoincrement())
+  expediente    String   @unique
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([version])
+}
+
+model Diputados {
+  id            Int      @id @default(autoincrement())
+  expediente    String   @unique
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([version])
+}
+
+// T3 — Type 2 person-specific tables (expediente NOT unique; FK → Person)
+
+model PiniHerrera {
+  id            Int      @id @default(autoincrement())
+  expediente    String
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  person_id     Int
+  person        Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([person_id])
+  @@index([version])
+  @@unique([expediente, person_id, createdAt])
+}
+
+model GabiPedrali {
+  id            Int      @id @default(autoincrement())
+  expediente    String
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  person_id     Int
+  person        Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([person_id])
+  @@index([version])
+  @@unique([expediente, person_id, createdAt])
+}
+
+model TeresitaMadera {
+  id            Int      @id @default(autoincrement())
+  expediente    String
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  person_id     Int
+  person        Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([person_id])
+  @@index([version])
+  @@unique([expediente, person_id, createdAt])
+}
+
+model FlorenciaLopez {
+  id            Int      @id @default(autoincrement())
+  expediente    String
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  person_id     Int
+  person        Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([person_id])
+  @@index([version])
+  @@unique([expediente, person_id, createdAt])
+}
+
+model GuryCaceres {
+  id            Int      @id @default(autoincrement())
+  expediente    String
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  person_id     Int
+  person        Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([person_id])
+  @@index([version])
+  @@unique([expediente, person_id, createdAt])
+}
+
+model Dirigentes {
+  id            Int      @id @default(autoincrement())
+  expediente    String
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  person_id     Int
+  person        Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([person_id])
+  @@index([version])
+  @@unique([expediente, person_id, createdAt])
+}
+
+model Romina {
+  id            Int      @id @default(autoincrement())
+  expediente    String
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  person_id     Int
+  person        Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([person_id])
+  @@index([version])
+  @@unique([expediente, person_id, createdAt])
+}
+
+model Misael {
+  id            Int      @id @default(autoincrement())
+  expediente    String
+  nombre        String?
+  referente     String?
+  detalle       String?
+  monto_total   Float    @default(0)
+  monto_parcial Float    @default(0)
+  saldo         Float    @default(0)
+  version       Int      @default(1)
+  imported_from String   @default("INFORME_DIARIO")
+  person_id     Int
+  person        Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([expediente])
+  @@index([person_id])
+  @@index([version])
+  @@unique([expediente, person_id, createdAt])
+}
+
+// T4 — ReportesHistorico (immutable audit log; never updated)
+model ReportesHistorico {
+  id                    Int      @id @default(autoincrement())
+  fecha_importacion     DateTime @default(now())
+  expediente            String?
+  nombre                String?
+  referente             String?
+  monto_total           Float    @default(0)
+  monto_parcial         Float    @default(0)
+  saldo                 Float    @default(0)
+  import_source_file    String?
+  matched_table_type    String?
+  matched_table_name    String?
+  matched_by_expediente Boolean  @default(false)
+  matched_by_name       Boolean  @default(false)
+  version_created       Int?
+  warnings              String?
+  createdAt             DateTime @default(now())
+
+  @@index([fecha_importacion])
+  @@index([expediente])
+  @@index([matched_table_type])
+  @@index([matched_by_expediente])
+  @@index([matched_by_name])
+}
