@@ -93,31 +93,31 @@ Chain strategy: pending
 
 ## Phase 3: Core Services
 
-- [ ] **T9** — Create `server/src/services/import/NameNormalizationService.ts`; export `normalize(input: string): string` (toUpperCase → trim → collapse spaces → remove `,.-`) and `compare(a: string, b: string): boolean`; pure functions, no Prisma dependency; no class needed
+- [x] **T9** — Create `server/src/services/import/NameNormalizationService.ts`; export `normalize(input: string): string` (toUpperCase → trim → collapse spaces → remove `,.-`) and `compare(a: string, b: string): boolean`; pure functions, no Prisma dependency; no class needed
   - **Files**: `server/src/services/import/NameNormalizationService.ts`
   - **Dependencies**: T8
   - **Est. lines**: ~40
   - **Test**: `normalize("Maza, Angel Eduardo") === "MAZA ANGEL EDUARDO"`; `compare("pini herrera", "PINI HERRERA") === true`
 
-- [ ] **T10** — Create `server/src/services/import/VersioningService.ts`; implement `getLatestVersion(tableName, expediente, prisma): Promise<{version: number} | null>`, `isDuplicate(tableName, expediente, importDate, prisma): Promise<boolean>`, `createVersionedRow(tableName, tableType, row, matchResult, importDate, prisma): Promise<VersionedRowResult>`; Type 1 = `prisma.upsert`; Type 2 = `prisma.create`
+- [x] **T10** — Create `server/src/services/import/VersioningService.ts`; implement `getLatestVersion(tableName, expediente, prisma): Promise<{version: number} | null>`, `isDuplicate(tableName, expediente, importDate, prisma): Promise<boolean>`, `createVersionedRow(tableName, tableType, row, matchResult, importDate, prisma): Promise<VersionedRowResult>`; Type 1 = `prisma.upsert`; Type 2 = `prisma.create`
   - **Files**: `server/src/services/import/VersioningService.ts`
   - **Dependencies**: T7, T8, T5 (Prisma client with new models)
   - **Est. lines**: ~100
   - **Test**: Given mocked `prisma.expedientes.findFirst` returning `{version: 1}`, `getLatestVersion` returns `{version: 1}`; `isDuplicate` returns true when same date found
 
-- [ ] **T11** — Create `server/src/services/import/ReportesHistoricoService.ts`; implement `log(entry: ReportesHistoricoEntry, prisma): Promise<void>`; method MUST never throw (wrap in try/catch; log error to console but don't propagate); immutable insert only — no updates
+- [x] **T11** — Create `server/src/services/import/ReportesHistoricoService.ts`; implement `log(entry: ReportesHistoricoEntry, prisma): Promise<void>`; method MUST never throw (wrap in try/catch; log error to console but don't propagate); immutable insert only — no updates
   - **Files**: `server/src/services/import/ReportesHistoricoService.ts`
   - **Dependencies**: T7, T8, T5
   - **Est. lines**: ~55
   - **Test**: When `prisma.reportesHistorico.create` throws, `log()` resolves (does not reject); otherwise creates exactly 1 row
 
-- [ ] **T12** — Create `server/src/services/import/MatchingService.ts`; constructor receives `PrismaClient` and `persons: Person[]` (loaded at boot); implement `match(row: ImportRow): Promise<MatchResult>`; Type 1 loop sequential (ILIKE on `expediente`), detect multi-table ambiguity; Type 2 via `Promise.all` across 8 tables (normalize nombre before compare); return `expediente_exact | name_exact | ambiguous | no_match`
+- [x] **T12** — Create `server/src/services/import/MatchingService.ts`; constructor receives `PrismaClient` and `persons: Person[]` (loaded at boot); implement `match(row: ImportRow): Promise<MatchResult>`; Type 1 loop sequential (ILIKE on `expediente`), detect multi-table ambiguity; Type 2 via `Promise.all` across 8 tables (normalize nombre before compare); return `expediente_exact | name_exact | ambiguous | no_match`
   - **Files**: `server/src/services/import/MatchingService.ts`
   - **Dependencies**: T8, T9, T11
   - **Est. lines**: ~115
   - **Test**: Given mocked prisma with `Expedientes` returning one row, `match({expediente: "EXP-001"})` returns `match_type: 'expediente_exact'`; given two tables returning the same expediente, returns `match_type: 'ambiguous'`
 
-- [ ] **T13** — Create `server/src/services/import/ImportExcelService.ts`; constructor receives `PrismaClient`, `MatchingService`, `VersioningService`, `ReportesHistoricoService`; implement `parseFile(buffer: Buffer): Promise<ImportRow[]>` using `exceljs` (first non-empty row = headers, case-insensitive map); implement `importFile(buffer, filename, importDate): Promise<ImportResult>`; chunk 100 rows per batch; per-row `try/catch`; call `ReportesHistoricoService.log()` for EVERY row regardless of match result
+- [x] **T13** — Create `server/src/services/import/ImportExcelService.ts`; constructor receives `PrismaClient`, `MatchingService`, `VersioningService`, `ReportesHistoricoService`; implement `parseFile(buffer: Buffer): Promise<ImportRow[]>` using `exceljs` (first non-empty row = headers, case-insensitive map); implement `importFile(buffer, filename, importDate): Promise<ImportResult>`; chunk 100 rows per batch; per-row `try/catch`; call `ReportesHistoricoService.log()` for EVERY row regardless of match result
   - **Files**: `server/src/services/import/ImportExcelService.ts`
   - **Dependencies**: T7, T8, T9, T10, T11, T12
   - **Est. lines**: ~160
