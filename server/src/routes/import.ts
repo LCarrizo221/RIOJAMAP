@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { authenticate } from '../middleware/auth.js';
-import { generalApiLimiter } from '../middleware/rateLimit.js';
-import * as importController from '../controllers/importController.js';
+import { authenticate } from '../middleware/auth';
+import { generalApiLimiter } from '../middleware/rateLimit';
+import * as importController from '../controllers/importController';
 
 const router = Router();
 
