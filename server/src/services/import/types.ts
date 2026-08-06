@@ -1,0 +1,147 @@
+/**
+ * TypeScript interfaces for the Excel Import service layer.
+ * These types are used internally by ImportExcelService, MatchingService,
+ * VersioningService, and ReportesHistoricoService.
+ *
+ * Zod runtime schemas live in server/src/schemas/import.ts.
+ */
+
+// ─── Table Name Unions ─────────────────────────────────────────────────────────
+
+export type GenericTableName =
+  | 'expedientes'
+  | 'conveniosMunic'
+  | 'deudasEXPTES'
+  | 'instituciones'
+  | 'intendentes026'
+  | 'diputados';
+
+export type PersonTableName =
+  | 'piniHerrera'
+  | 'gabiPedrali'
+  | 'teresitaMadera'
+  | 'florenciaLopez'
+  | 'guryCaceres'
+  | 'dirigentes'
+  | 'romina'
+  | 'misael';
+
+/** All 6 generic Type1 table names in search-priority order. */
+export const GENERIC_TABLES: GenericTableName[] = [
+  'expedientes',
+  'conveniosMunic',
+  'deudasEXPTES',
+  'instituciones',
+  'intendentes026',
+  'diputados',
+];
+
+/** All 8 person-specific Type2 table names. */
+export const PERSON_TABLES: PersonTableName[] = [
+  'piniHerrera',
+  'gabiPedrali',
+  'teresitaMadera',
+  'florenciaLopez',
+  'guryCaceres',
+  'dirigentes',
+  'romina',
+  'misael',
+];
+
+// ─── Match / Versioning Discriminant Types ────────────────────────────────────
+
+/** All possible outcomes from the matching algorithm. */
+export type MatchType = 'expediente_exact' | 'name_exact' | 'ambiguous' | 'no_match';
+
+/** Distinguishes generic (Type1) tables from person-specific (Type2) tables. */
+export type TableType = 'Type1' | 'Type2';
+
+// ─── Import Row ───────────────────────────────────────────────────────────────
+
+/**
+ * A single row parsed from the INFORME DIARIO Excel file.
+ * `raw` carries the original row data for audit purposes.
+ */
+export interface ImportRow {
+  expediente?: string;
+  nombre?: string;
+  referente?: string;
+  detalle?: string;
+  monto_total: number;
+  monto_parcial: number;
+  saldo: number;
+  fecha?: Date;
+  raw?: Record<string, unknown>;
+}
+
+// ─── Matching ─────────────────────────────────────────────────────────────────
+
+/**
+ * Result returned by MatchingService.match().
+ * `matched_row` is the existing DB row (version info needed for versioning).
+ */
+export interface MatchResult {
+  match_type: MatchType;
+  table_type?: TableType;
+  table_name?: string;
+  matched_row?: { id: number; version: number; [key: string]: unknown };
+  candidates?: unknown[];
+}
+
+// ─── Versioning ───────────────────────────────────────────────────────────────
+
+/**
+ * What VersioningService.createVersionedRow() returns per successful row.
+ * Serialized as ISO string for JSON transport.
+ */
+export interface VersionedRowResult {
+  table_type: TableType;
+  table_name: string;
+  row_id: number;
+  expediente?: string;
+  version_created: number;
+  matched_by: MatchType;
+  created_at: string;
+}
+
+// ─── Import Result ────────────────────────────────────────────────────────────
+
+export interface ImportSummary {
+  total_rows: number;
+  matched_by_expediente: number;
+  matched_by_name: number;
+  unmatched: number;
+  ambiguous: number;
+  warnings: string[];
+}
+
+export interface ImportResult {
+  success: boolean;
+  summary: ImportSummary;
+  updated_rows: VersionedRowResult[];
+  errors: string[];
+}
+
+// ─── Audit Log ────────────────────────────────────────────────────────────────
+
+/**
+ * Input shape for ReportesHistoricoService.log().
+ * Maps directly to the ReportesHistorico Prisma model.
+ * Note: expediente is optional — some unmatched rows may lack it.
+ */
+export interface ReportesHistoricoEntry {
+  expediente?: string;
+  nombre?: string;
+  referente?: string;
+  monto_total: number;
+  monto_parcial: number;
+  saldo: number;
+  import_source_file?: string;
+  matched_table_type?: string;
+  matched_table_name?: string;
+  matched_by_expediente: boolean;
+  matched_by_name: boolean;
+  version_created?: number;
+  warnings?: string;
+  fecha_importacion: Date;
+}

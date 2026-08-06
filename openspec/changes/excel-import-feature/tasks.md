@@ -77,13 +77,13 @@ Chain strategy: pending
 
 ## Phase 2: Types & Zod Schemas
 
-- [ ] **T7** — Create `server/src/schemas/import.ts`; define `BaseTableRowSchema` (DRY base); named aliases for 6 Type 1 schemas; `PersonTableRowSchema` (extends base + `person_id`); `PersonSchema`; `ReportesHistoricoSchema`; `ImportRequestSchema` (text fields only — multer handles binary); `MatchResultSchema`; `ImportSummarySchema`; `ImportResponseSchema`; export `ImportResponse` inferred type
+- [x] **T7** — Create `server/src/schemas/import.ts`; define `BaseTableRowSchema` (DRY base); named aliases for 6 Type 1 schemas; `PersonTableRowSchema` (extends base + `person_id`); `PersonSchema`; `ReportesHistoricoSchema`; `ImportRequestSchema` (text fields only — multer handles binary); `MatchResultSchema`; `ImportSummarySchema`; `ImportResponseSchema`; export `ImportResponse` inferred type
   - **Files**: `server/src/schemas/import.ts`
   - **Dependencies**: none
   - **Est. lines**: ~130
   - **Test**: `import { ImportResponseSchema } from './import'` compiles without error; `ImportResponseSchema.parse({...})` validates a well-formed response object
 
-- [ ] **T8** — Create `server/src/services/import/types.ts`; export `ImportRow`, `MatchType` union, `TableType` union, `MatchResult`, `VersionedRowResult`, `ImportResult`, `ReportesHistoricoEntry` interfaces
+- [x] **T8** — Create `server/src/services/import/types.ts`; export `ImportRow`, `MatchType` union, `TableType` union, `MatchResult`, `VersionedRowResult`, `ImportResult`, `ReportesHistoricoEntry` interfaces
   - **Files**: `server/src/services/import/types.ts`
   - **Dependencies**: none
   - **Est. lines**: ~65
@@ -161,7 +161,7 @@ Chain strategy: pending
 
 ## Phase 5: Client Contracts & API Client
 
-- [ ] **T19** — Create `client/src/contracts/import.ts`; mirror server schemas with `.strict()` for drift detection (same pattern as `contracts/obra.ts`); export `ImportResponseContract`, `ReportesHistoricoContract`, `VersionHistoryContract`; re-export from `client/src/contracts/index.ts`
+- [x] **T19** — Create `client/src/contracts/import.ts`; mirror server schemas with `.strict()` for drift detection (same pattern as `contracts/obra.ts`); export `ImportResponseContract`, `ReportesHistoricoContract`, `VersionHistoryContract`; re-export from `client/src/contracts/index.ts`
   - **Files**: `client/src/contracts/import.ts`, `client/src/contracts/index.ts`
   - **Dependencies**: T7 (mirrors server schemas; no runtime dep on server code)
   - **Est. lines**: ~65
