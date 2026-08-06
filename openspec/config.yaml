@@ -91,14 +91,32 @@ conventions:
 
 testing:
   strict_tdd: false
-  current_capabilities:
-    - TypeScript type checking via "lint": "tsc --noEmit"
-  missing:
-    - Unit test framework (Jest/Vitest)
-    - Component testing (React Testing Library)
-    - E2E testing (Playwright/Cypress)
-    - API testing (Supertest)
-    - Prisma testing utilities
+  description: "TypeScript type checking only; no test framework installed. Strict TDD disabled due to missing Jest/Vitest."
+  
+  server_capabilities:
+    - Runtime: Node.js 24.14.0
+    - TypeScript compilation via tsc
+    - Type checking via typescript v5.7.2
+    - ORM testing: Prisma 5.22.0 (client installed, no test utilities)
+    - Missing: Unit tests (Jest/Vitest), API testing (Supertest), E2E tests (Playwright/Cypress)
+  
+  client_capabilities:
+    - Runtime: Node.js, Vite 6 dev server
+    - Type checking via tsc --noEmit ("lint" script)
+    - Missing: Unit tests (Vitest/Jest), Component tests (React Testing Library), E2E tests (Playwright/Cypress)
+  
+  infrastructure:
+    - CI: None configured (no GitHub Actions, GitLab CI, etc.)
+    - Coverage tools: None
+    - Performance testing: None
+    - Load testing: None
+  
+  recommendations:
+    - priority_1: "Install Jest + @testing-library/react for client unit & component tests"
+    - priority_2: "Install Supertest + Jest for server API endpoint tests"
+    - priority_3: "Install Playwright or Cypress for E2E tests (map interactions, CRUD flows)"
+    - priority_4: "Set up GitHub Actions CI with test coverage reporting"
+    - priority_5: "Enable strict_tdd: true after test framework is in place"
   
 persistence_mode: hybrid
 artifacts:
