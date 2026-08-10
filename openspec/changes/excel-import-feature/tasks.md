@@ -61,11 +61,12 @@ Chain strategy: pending
   - **Est. lines**: ~25
   - **Test**: `npx prisma validate` passes; 5 `@@index` directives present
 
-- [ ] **T5** — Run `npx prisma migrate dev --name excel_import_tables`; verify generated SQL DDL matches spec order: Person → Type 2 → Type 1 → ReportesHistorico → all indexes
-  - **Files**: `server/prisma/migrations/YYYYMMDD_excel_import_tables/migration.sql` (auto-generated)
+- [x] **T5** — Run `npx prisma migrate dev --name excel_import_tables`; verify generated SQL DDL matches spec order: Person → Type 2 → Type 1 → ReportesHistorico → all indexes
+  - **Files**: `server/prisma/migrations/20260806123255_excel_import_tables/migration.sql` (auto-generated)
   - **Dependencies**: T1, T2, T3, T4
   - **Est. lines**: ~0 authored (SQL is generated); ~200 SQL lines to verify
   - **Test**: `psql` shows all 16 tables; FK constraints on person tables exist
+  - **Status**: done — migration applied to local PostgreSQL (`server/.env` DATABASE_URL, db `riojamap`): `prisma migrate status` → "Database schema is up to date!"; live tables confirmed: Person, 6 Type 1 (Expedientes, ConveniosMunic, DeudasEXPTES, Diputados, Dirigentes, Instituciones), 8 Type 2 (PiniHerrera, GabiPedrali, TeresitaMadera, FlorenciaLopez, GuryCaceres, Romina, Misael, Obra, Intendentes026), ReportesHistorico. Seed applied: 8 Person records (ids 1–8). The earlier verify report claimed T5 BLOCKED because it did not load `server/.env`; actual state at archive time is applied.
 
 - [x] **T6** — Create `server/prisma/seed-persons.ts`; insert 8 `Person` records with `name` and `table_name_alias` (pini_herrera → "Pablo Pini Herrera", gabi_pedrali → "Gabriela Pedrali", teresita_madera → "Teresita Madera", florencia_lopez → "Florencia Lopez", gury_caceres → "Gury Caceres", dirigentes → "Dirigentes", romina → "Romina", misael → "Misael"); wire into `package.json` seed script
   - **Files**: `server/prisma/seed-persons.ts`, `server/package.json` (add seed script)
