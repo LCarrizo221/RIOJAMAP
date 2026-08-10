@@ -177,29 +177,64 @@ Chain strategy: pending
 
 ## Phase 6: Tests
 
-- [ ] **T21** — Write unit tests for `NameNormalizationService`; cover all 5 normalization scenarios from spec; cover `compare()` true/false cases; cover null/empty input guards; use Vitest
+- [x] **T21** — Write unit tests for `NameNormalizationService`; cover all 5 normalization scenarios from spec; cover `compare()` true/false cases; cover null/empty input guards; use Vitest
   - **Files**: `server/src/services/import/NameNormalizationService.test.ts`
   - **Dependencies**: T9
   - **Est. lines**: ~60
   - **Test (RED)**: Assert `normalize("Maza - Angel - Eduardo") === "MAZA ANGEL EDUARDO"` before writing implementation; assert `normalize(null as any) === ""`
+  - **Status**: done (file at `server/tests/import/NameNormalizationService.test.ts`; verified in sdd-verify PR5/PR6)
 
-- [ ] **T22** — Write unit tests for `MatchingService`; mock `PrismaClient` via `vi.mock`; cover `expediente_exact`, `name_exact`, `ambiguous` (multi-table), `no_match` branches; cover Type 2 parallel `Promise.all` path; cover name normalization in name-match path
+- [x] **T22** — Write unit tests for `MatchingService`; mock `PrismaClient` via `vi.mock`; cover `expediente_exact`, `name_exact`, `ambiguous` (multi-table), `no_match` branches; cover Type 2 parallel `Promise.all` path; cover name normalization in name-match path
   - **Files**: `server/src/services/import/MatchingService.test.ts`
   - **Dependencies**: T12
   - **Est. lines**: ~120
   - **Test (RED)**: Assert ambiguous case when two Type 1 tables both return a row for the same expediente → `match_type === 'ambiguous'`
+  - **Status**: done (file at `server/tests/import/MatchingService.test.ts`; verified in sdd-verify PR5/PR6)
 
-- [ ] **T23** — Write unit tests for `VersioningService`; mock `PrismaClient`; cover `isDuplicate` same-day (true) vs next-day (false); cover Type 1 `upsert` path (`version++`); cover Type 2 `create` path (new row, no upsert); cover `getLatestVersion` null case (first import)
+- [x] **T23** — Write unit tests for `VersioningService`; mock `PrismaClient`; cover `isDuplicate` same-day (true) vs next-day (false); cover Type 1 `upsert` path (`version++`); cover Type 2 `create` path (new row, no upsert); cover `getLatestVersion` null case (first import)
   - **Files**: `server/src/services/import/VersioningService.test.ts`
   - **Dependencies**: T10
   - **Est. lines**: ~95
   - **Test (RED)**: Assert `isDuplicate` returns `true` when `prisma[table].findFirst` returns a row on the same calendar day
+  - **Status**: done (file at `server/tests/import/VersioningService.test.ts`; verified in sdd-verify PR5/PR6)
 
-- [ ] **T24** — Write Vitest + MSW integration tests for `client/src/api/import.ts`; add MSW handler for `POST /api/import` returning `ImportResponse` fixture; assert `postImport()` resolves with parsed contract; add handler for GET version endpoints; assert contract `.parse()` catches unexpected server fields; test 401 returns rejected promise
+- [x] **T24** — Write Vitest + MSW integration tests for `client/src/api/import.ts`; add MSW handler for `POST /api/import` returning `ImportResponse` fixture; assert `postImport()` resolves with parsed contract; add handler for GET version endpoints; assert contract `.parse()` catches unexpected server fields; test 401 returns rejected promise
   - **Files**: `client/src/api/import.test.ts`, `client/src/mocks/handlers.ts` (add import handlers), `client/src/mocks/fixtures.ts` (add ImportResponse fixture)
   - **Dependencies**: T20, T19
   - **Est. lines**: ~120
   - **Test (RED)**: Assert `postImport()` with mocked 401 response throws; assert `ImportResponseContract.strict().parse({...extraField})` throws before writing the contract
+  - **Status**: done (file at `client/src/api/__tests__/import.test.ts` + MSW handlers/fixtures; 3 files / 29 tests PASS in sdd-verify PR5/PR6)
+
+- [x] **T7b** — `schemas/import.ts`: keep `personSelectSchema` field not exposed on the client contract
+  - **Status**: done (verified in sdd-verify PR2; client contract omits person select internals)
+
+- [x] **T18b** — Write unit tests for `MatchingService` (vi.mock PrismaClient; expediente_exact / name_exact / ambiguous / no_match branches; Type 2 parallel path)
+  - **Files**: `server/tests/import/MatchingService.test.ts`
+  - **Dependencies**: T22, T12
+  - **Status**: done (suite PASS — 8/8 server suites, 29/29 tests with `npx jest tests/import`)
+
+- [x] **T19b** — Write unit tests for `VersioningService` (vi.mock PrismaClient; isDuplicate same-day vs next-day; Type 1 upsert version++ ; Type 2 create; getLatestVersion null)
+  - **Files**: `server/tests/import/VersioningService.test.ts`
+  - **Dependencies**: T23, T10
+  - **Status**: done (suite PASS — 8/8 server suites, 29/29 tests with `npx jest tests/import`)
+
+- [x] **T20b** — Write coverage test for `ImportExcelService` (coverage gap fill)
+  - **Files**: `server/tests/import/ImportExcelService.coverage.test.ts`
+  - **Dependencies**: T20, T13
+  - **Status**: done (suite PASS — 8/8 server suites, 29/29 tests with `npx jest tests/import`)
+
+- [x] **T22b** — Pipeline check: tagged rows skip MatchingService
+  - **Files**: `server/tests/import/importMultiSheet.test.ts` (tagged-row path)
+  - **Dependencies**: T21, T13
+  - **Status**: done (suite PASS — 8/8 server suites, 29/29 tests with `npx jest tests/import`)
+
+- [x] **T23b** — Pipeline check: informe diario matches by name
+  - **Files**: `server/tests/import/importInformeDiario.test.ts` (positional + name-match path)
+  - **Dependencies**: T22, T13
+  - **Status**: done (suite PASS — 8/8 server suites, 29/29 tests with `npx jest tests/import`)
+
+- [x] **T24b** — Coverage committed to repo? (repo convention check)
+  - **Status**: done — coverage/ IS tracked in this repo (repo convention: commit coverage); regenerated after PR5/PR6, staged in reconciliation commit
 
 ---
 
