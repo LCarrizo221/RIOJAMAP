@@ -59,8 +59,15 @@ export type TableType = 'Type1' | 'Type2';
 // ─── Import Row ───────────────────────────────────────────────────────────────
 
 /**
- * A single row parsed from the INFORME DIARIO Excel file.
+ * A single row parsed from an Excel import file.
  * `raw` carries the original row data for audit purposes.
+ *
+ * Two origins are possible:
+ *  - Multi-sheet files (Informes_Convenios_Deudas.xlsx): rows are tagged at
+ *    parse time with `table_name` (and `person_id` for Type2 person tables),
+ *    so the pipeline skips cross-table matching and writes directly.
+ *  - Positional / generic single-sheet files: rows carry no tag and are
+ *    resolved through MatchingService.
  */
 export interface ImportRow {
   expediente?: string;
@@ -71,6 +78,10 @@ export interface ImportRow {
   monto_parcial: number;
   saldo: number;
   fecha?: Date;
+  /** Target Prisma table, set at parse time for multi-sheet files. */
+  table_name?: string;
+  /** Person registry FK, set at parse time for Type2 rows in multi-sheet files. */
+  person_id?: number;
   raw?: Record<string, unknown>;
 }
 
