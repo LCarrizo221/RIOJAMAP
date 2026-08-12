@@ -49,7 +49,7 @@ describe('ImportExcelService.parseFile', () => {
     ws.addRow(['2026-08-06', 'EXP001', 'Juan Pérez', 'Ref1', 'Detail', 1000, 600, 400]);
     const buffer = await wb.xlsx.writeBuffer();
 
-    const rows = await service.parseFile(buffer as any);
+    const { rows } = await service.parseFile(buffer as any);
     expect(rows).toHaveLength(1);
     const row = rows[0];
     expect(row.expediente).toBe('EXP001');
@@ -67,7 +67,7 @@ describe('ImportExcelService.parseFile', () => {
     const ws = wb.addWorksheet('Sheet1');
     ws.addRow(['Some', 'Random', 'Data']);
     const buffer = await wb.xlsx.writeBuffer();
-    const rows = await service.parseFile(buffer as any);
+    const { rows } = await service.parseFile(buffer as any);
     expect(rows).toHaveLength(0);
   });
 
@@ -77,7 +77,7 @@ describe('ImportExcelService.parseFile', () => {
     ws.addRow(['Fecha', 'Expediente', 'Nombre', 'Referente', 'Detalle', 'Monto_Total', 'Monto_Parcial', 'Saldo']);
     ws.addRow([]); // empty row
     const buffer = await wb.xlsx.writeBuffer();
-    const rows = await service.parseFile(buffer as any);
+    const { rows } = await service.parseFile(buffer as any);
     expect(rows).toHaveLength(0);
   });
 });

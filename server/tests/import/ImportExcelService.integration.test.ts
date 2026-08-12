@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import { ImportExcelService } from '../../src/services/import/ImportExcelService';
+import { NameNormalizationService } from '../../src/services/import/NameNormalizationService';
 import type { ImportRow, ImportResult } from '../../src/services/import/types.js';
 
 // Helper to create a minimal ImportRow
@@ -87,7 +88,7 @@ describe('ImportExcelService _processRow branches', () => {
       buildResult: jest.fn().mockReturnValue({} as any),
     } as any;
     const historicoMock = { log: jest.fn().mockResolvedValue(undefined) } as any;
-    const nameServiceMock = {} as any;
+    const nameServiceMock = new NameNormalizationService() as any;
 
     const service = new ImportExcelService({} as any, matchingMock, versioningMock, historicoMock, nameServiceMock);
     const result = JSON.parse(JSON.stringify(baseResult));
