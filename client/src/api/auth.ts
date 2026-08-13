@@ -1,7 +1,7 @@
 import { validateResponse } from './validate.js';
 import { UserSchema, type User } from '../contracts/auth.js';
 
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:3003/api';
 
 // Re-export User type for backward compatibility
 export type { User };
@@ -19,13 +19,13 @@ export async function loginApi(email: string, password: string): Promise<void> {
     throw new Error(err.error || 'Login failed');
   }
   
-  // Backend returns void on success (200/204), but validate if it returns data
   const contentType = response.headers.get('content-type');
   if (contentType && contentType.includes('application/json')) {
     const data = await response.json();
-    // If backend returns user data, validate it
-    if (data && typeof data === 'object') {
-      validateResponse(data, UserSchema);
+    
+    // Validamos el objeto 'user' que viene dentro de la respuesta del login
+    if (data && typeof data === 'object' && 'user' in data) {
+      validateResponse(data.user, UserSchema); // <--- CAMBIO AQUÍ: data.user en vez de data
     }
   }
 }

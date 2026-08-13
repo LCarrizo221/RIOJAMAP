@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AuthGuard } from './components/auth/AuthGuard';
 import { LoginPage } from './components/auth/LoginPage';
+import { ImportPage } from './components/ImportPage';
 import UserMenu from './components/auth/UserMenu';
 import InteractiveMap from './components/Map.js';
 import Sidebar from './components/Sidebar.js';
@@ -91,6 +92,11 @@ export default function App() {
           <Route path="/" element={
             <AuthGuard>
               <MapApp />
+            </AuthGuard>
+          } />
+          <Route path="/import" element={
+            <AuthGuard>
+              <ImportPage />
             </AuthGuard>
           } />
         </Routes>

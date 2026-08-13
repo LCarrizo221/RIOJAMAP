@@ -8,6 +8,7 @@ import { registerSchema, loginSchema } from '../schemas/auth.js';
 const router = Router();
 const prisma = new PrismaClient();
 const SALT_ROUNDS = 12;
+const isProduction = process.env.NODE_ENV === 'production';
 
 // POST /api/auth/register (solo ADMIN)
 router.post('/register', authenticate, authorize('ADMIN'), async (req, res) => {
@@ -122,14 +123,15 @@ router.post('/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    // Setear httpOnly cookie
-    res.cookie('riojamap_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000, // 24 horas
-      path: '/',
-    });
+
+res.cookie('riojamap_token', token, {
+  httpOnly: true,
+  secure: isProduction, // false en localhost hhtp, true en producción https
+  sameSite: isProduction ? 'none' : 'lax', // 'lax' permite cookies en http://localhost
+  maxAge: 24 * 60 * 60 * 1000, 
+  path: '/',
+});
+
 
     res.json({
       user: {
