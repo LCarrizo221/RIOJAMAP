@@ -172,4 +172,54 @@ describe('ImportExcelService.importFile — eventual mode (slice 2)', () => {
     const [, , rowData] = mockVersioningService.upsertGenericRow.mock.calls[0];
     expect(rowData.fecha_carga).toEqual(optsFechaCarga);
   });
+
+  it('tags a Type2 row matched by name es_eventual=true and spreads it into the versioned insert', async () => {
+    mockMatchingService.match.mockResolvedValue({
+      match_type: 'name_exact',
+      table_type: 'Type2',
+      table_name: 'piniHerrera',
+      matched_row: { person_id: 3 },
+    });
+    mockVersioningService.createVersionedRow.mockResolvedValue({ id: 2, version: 1 });
+    const importDate = new Date('2026-08-06T12:00:00Z');
+
+    const result = await service.importFile(await buildBuffer(), importDate, 'test.xlsx', {
+      nro_expediente: ' exp-42 ',
+    });
+
+    expect(result.summary.eventual_matched).toBe(1);
+    expect(mockVersioningService.createVersionedRow).toHaveBeenCalledTimes(2);
+
+    const [, eventualRowData] = mockVersioningService.createVersionedRow.mock.calls[0];
+    expect(eventualRowData).toMatchObject({ es_eventual: true, person_id: 3, expediente: 'EXP-42' });
+    expect(eventualRowData.fecha_carga).toEqual(importDate);
+
+    const [, normalRowData] = mockVersioningService.createVersionedRow.mock.calls[1];
+    expect(normalRowData).toMatchObject({ es_eventual: false, person_id: 3 });
+  });
+
+  it('tags a Type2 row matched by expediente es_eventual=true and spreads it into the versioned insert', async () => {
+    mockMatchingService.match.mockResolvedValue({
+      match_type: 'expediente_exact',
+      table_type: 'Type2',
+      table_name: 'piniHerrera',
+      matched_row: { person_id: 3 },
+    });
+    mockVersioningService.createVersionedRow.mockResolvedValue({ id: 3, version: 1 });
+    const importDate = new Date('2026-08-06T12:00:00Z');
+
+    const result = await service.importFile(await buildBuffer(), importDate, 'test.xlsx', {
+      nro_expediente: ' exp-42 ',
+    });
+
+    expect(result.summary.eventual_matched).toBe(1);
+    expect(mockVersioningService.createVersionedRow).toHaveBeenCalledTimes(2);
+
+    const [, eventualRowData] = mockVersioningService.createVersionedRow.mock.calls[0];
+    expect(eventualRowData).toMatchObject({ es_eventual: true, person_id: 3, expediente: 'EXP-42' });
+    expect(eventualRowData.fecha_carga).toEqual(importDate);
+
+    const [, normalRowData] = mockVersioningService.createVersionedRow.mock.calls[1];
+    expect(normalRowData).toMatchObject({ es_eventual: false, person_id: 3 });
+  });
 });
