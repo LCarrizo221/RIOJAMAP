@@ -21,6 +21,8 @@ export function ImportPage() {
 
   const [tab, setTab] = useState<Tab>('cargar');
   const [file, setFile] = useState<File | null>(null);
+  const [nroExpediente, setNroExpediente] = useState('');
+  const [fechaCarga, setFechaCarga] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ImportResponse | null>(null);
@@ -48,7 +50,10 @@ export function ImportPage() {
     setResult(null);
 
     try {
-      const response = await postImport(file);
+      const response = await postImport(file, {
+        nro_expediente: nroExpediente.trim() || undefined,
+        fecha_carga: fechaCarga || undefined,
+      });
       setResult(response);
       setStatus('success');
     } catch (err) {
@@ -59,6 +64,8 @@ export function ImportPage() {
 
   const handleReset = () => {
     setFile(null);
+    setNroExpediente('');
+    setFechaCarga('');
     setStatus('idle');
     setError(null);
     setResult(null);
@@ -107,11 +114,15 @@ export function ImportPage() {
           isAdmin ? (
             <UploadPanel
               file={file}
+              nroExpediente={nroExpediente}
+              fechaCarga={fechaCarga}
               status={status}
               error={error}
               result={result}
               fileInputRef={fileInputRef}
               onFileChange={handleFileChange}
+              onNroExpedienteChange={setNroExpediente}
+              onFechaCargaChange={setFechaCarga}
               onSubmit={handleSubmit}
               onReset={handleReset}
             />
@@ -132,22 +143,30 @@ export function ImportPage() {
 
 interface UploadPanelProps {
   file: File | null;
+  nroExpediente: string;
+  fechaCarga: string;
   status: Status;
   error: string | null;
   result: ImportResponse | null;
   fileInputRef: RefObject<HTMLInputElement | null>;
   onFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onNroExpedienteChange: (value: string) => void;
+  onFechaCargaChange: (value: string) => void;
   onSubmit: (e: FormEvent) => void;
   onReset: () => void;
 }
 
 function UploadPanel({
   file,
+  nroExpediente,
+  fechaCarga,
   status,
   error,
   result,
   fileInputRef,
   onFileChange,
+  onNroExpedienteChange,
+  onFechaCargaChange,
   onSubmit,
   onReset,
 }: UploadPanelProps) {
@@ -178,6 +197,49 @@ function UploadPanel({
                 ({(file.size / 1024).toFixed(1)} KB)
               </p>
             )}
+          </div>
+
+          {/* Optional import metadata: eventual expedition number + load date */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="nro-expediente"
+                className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2"
+              >
+                Nro. expediente (opcional)
+              </label>
+              <input
+                id="nro-expediente"
+                type="text"
+                value={nroExpediente}
+                onChange={(e) => onNroExpedienteChange(e.target.value)}
+                disabled={status === 'loading'}
+                placeholder="Ej: H11-00388-7-26"
+                className="block w-full bg-[#141417] border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200 placeholder:text-slate-600 focus:border-amber-500/50 focus:outline-none disabled:opacity-50"
+              />
+              <p className="mt-1 text-[11px] font-mono text-slate-600">
+                Si se completa, las filas con ese expediente se marcan como eventuales.
+              </p>
+            </div>
+            <div>
+              <label
+                htmlFor="fecha-carga"
+                className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2"
+              >
+                Fecha de carga (opcional)
+              </label>
+              <input
+                id="fecha-carga"
+                type="date"
+                value={fechaCarga}
+                onChange={(e) => onFechaCargaChange(e.target.value)}
+                disabled={status === 'loading'}
+                className="block w-full bg-[#141417] border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200 focus:border-amber-500/50 focus:outline-none disabled:opacity-50"
+              />
+              <p className="mt-1 text-[11px] font-mono text-slate-600">
+                Por defecto usa la fecha actual.
+              </p>
+            </div>
           </div>
 
           {/* Actions */}
