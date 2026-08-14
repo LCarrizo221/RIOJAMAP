@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
 import { generalApiLimiter } from '../middleware/rateLimit';
 import * as importController from '../controllers/importController';
 
@@ -27,10 +27,12 @@ const upload = multer({
   },
 });
 
-// POST /api/import — authenticate first (reject unauthenticated before parsing body)
+// POST /api/import — ADMIN only (import-permissions spec); authenticate first
+// (reject unauthenticated before parsing body), then authorize before multer.
 router.post(
   '/',
   authenticate,
+  authorize('ADMIN'),
   generalApiLimiter,
   upload.single('file'),
   importController.uploadFile,
@@ -60,5 +62,13 @@ router.get(
 
 // GET /api/import/tables/:tableName — read-only listing (ADMIN and USER)
 router.get('/tables/:tableName', authenticate, importController.listTableRows);
+
+// POST /api/import/tables/:tableName/rows — ADMIN manual row creation
+router.post(
+  '/tables/:tableName/rows',
+  authenticate,
+  authorize('ADMIN'),
+  importController.createTableRow,
+);
 
 export default router;

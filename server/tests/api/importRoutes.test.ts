@@ -8,18 +8,42 @@ import importRoutes from '../../src/routes/import';
 import { importResponseSchema, tableListResponseSchema } from '../../src/schemas/import';
 
 // Mock Prisma so the real listTableRows (whitelist + pagination) runs against fake data.
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn().mockImplementation(() => ({
-    expedientes: {
-      count: jest.fn().mockResolvedValue(2),
-      findMany: jest.fn().mockResolvedValue([
-        { id: 2, expediente: 'EXP-42', es_eventual: true },
-        { id: 1, expediente: 'EXP-1', es_eventual: false },
-      ]),
-    },
-    $disconnect: jest.fn().mockResolvedValue(undefined),
-  })),
-}));
+jest.mock('@prisma/client', () => {
+  // Track the most recent Type2 row created so findUnique returns it (201 body).
+  let lastCreatedRow: any = null;
+  return {
+    PrismaClient: jest.fn().mockImplementation(() => ({
+      expedientes: {
+        count: jest.fn().mockResolvedValue(2),
+        findMany: jest.fn().mockResolvedValue([
+          { id: 2, expediente: 'EXP-42', es_eventual: true },
+          { id: 1, expediente: 'EXP-1', es_eventual: false },
+        ]),
+        findUnique: jest.fn().mockImplementation(({ where }: any) =>
+          where?.expediente === 'EXP-42' ? { id: 1, expediente: 'EXP-42' } : null,
+        ),
+        findFirst: jest.fn().mockResolvedValue(null),
+      },
+      piniHerrera: {
+        findFirst: jest.fn().mockResolvedValue(null),
+        findUnique: jest.fn().mockImplementation(({ where }: any) =>
+          lastCreatedRow && lastCreatedRow.id === where?.id ? lastCreatedRow : null,
+        ),
+        create: jest.fn().mockImplementation(({ data }: any) => {
+          lastCreatedRow = { id: 10, ...data };
+          return lastCreatedRow;
+        }),
+      },
+      person: {
+        findUnique: jest.fn().mockResolvedValue({ id: 3, name: 'Pini Herrera', table_name_alias: 'piniHerrera' }),
+      },
+      reportesHistorico: {
+        create: jest.fn().mockResolvedValue({ id: 1 }),
+      },
+      $disconnect: jest.fn().mockResolvedValue(undefined),
+    })),
+  };
+});
 
 // Partial mock: keep the real listTableRows, stub only the DB-touching handlers.
 jest.mock('../../src/controllers/importController.ts', () => {
@@ -148,5 +172,68 @@ describe('GET /api/import/tables/:tableName', () => {
     expect(() => tableListResponseSchema.parse(res.body)).not.toThrow();
     expect(res.body).toMatchObject({ table_name: 'expedientes', eventual_total: 2 });
     expect(res.body.pagination).toMatchObject({ page: 1, limit: 50, total: 2, totalPages: 1 });
+  });
+});
+
+describe('Write paths — ADMIN gates & manual row creation (slice 2)', () => {
+  const app = createApp();
+  const userCookie = `riojamap_token=${jwt.sign(
+    { id: 2, email: 'user@example.com', name: 'User', role: 'USER' },
+    JWT_SECRET,
+    { expiresIn: '1h' },
+  )}`;
+
+  it('USER blocked from POST /api/import with 403 FORBIDDEN and no DB access', async () => {
+    const wb = new ExcelJS.Workbook();
+    wb.addWorksheet('Sheet1').getCell('A1').value = 'x';
+    const buffer = await wb.xlsx.writeBuffer();
+    const prismaMock = jest.requireMock('@prisma/client').PrismaClient as jest.Mock;
+    const instancesBefore = prismaMock.mock.results.length;
+    const res = await request(app)
+      .post('/api/import/')
+      .set('Cookie', userCookie)
+      .attach('file', buffer as any, 'test.xlsx');
+    expect(res.status).toBe(403);
+    expect(res.body.code).toBe('FORBIDDEN');
+    // authorize() short-circuits before the controller → no PrismaClient, nothing persisted/audited.
+    expect(prismaMock.mock.results.length).toBe(instancesBefore);
+  });
+  it('USER blocked from POST /api/import/tables/:tableName/rows with 403 FORBIDDEN and no DB access', async () => {
+    const prismaMock = jest.requireMock('@prisma/client').PrismaClient as jest.Mock;
+    const instancesBefore = prismaMock.mock.results.length;
+    const res = await request(app)
+      .post('/api/import/tables/piniHerrera/rows')
+      .set('Cookie', userCookie)
+      .send({ expediente: 'P-1', monto_total: 100, person_id: 3 });
+    expect(res.status).toBe(403);
+    expect(res.body.code).toBe('FORBIDDEN');
+    expect(prismaMock.mock.results.length).toBe(instancesBefore);
+  });
+  it('Type1 manual create with existing expediente returns 409 EXPEDIENTE_EXISTS', async () => {
+    const res = await request(app)
+      .post('/api/import/tables/expedientes/rows')
+      .set('Cookie', authCookie())
+      .send({ expediente: 'EXP-42', monto_total: 100 });
+    expect(res.status).toBe(409);
+    expect(res.body.code).toBe('EXPEDIENTE_EXISTS');
+  });
+  it('Type2 manual create returns 201 with created row and writes an audit entry', async () => {
+    const res = await request(app)
+      .post('/api/import/tables/piniHerrera/rows')
+      .set('Cookie', authCookie())
+      .send({ expediente: 'P-1', monto_total: 100, person_id: 3 });
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      id: 10,
+      expediente: 'P-1',
+      version: 1,
+      es_eventual: false,
+      imported_from: 'MANUAL',
+      person_id: 3,
+    });
+    expect(res.body.fecha_carga).toEqual(expect.any(String));
+    const prismaMock = jest.requireMock('@prisma/client').PrismaClient as jest.Mock;
+    const instance = prismaMock.mock.results[prismaMock.mock.results.length - 1].value;
+    expect(instance.reportesHistorico.create).toHaveBeenCalledTimes(1);
   });
 });
