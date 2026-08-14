@@ -115,6 +115,19 @@ export interface VersionedRowResult {
   created_at: string;
 }
 
+// ─── Import Options (eventual mode) ───────────────────────────────────────────
+
+/**
+ * Optional mode for importFile: when `nro_expediente` is present, rows whose
+ * parsed `expediente` equals it (trimmed, case-insensitive) persist with
+ * `es_eventual=true`; all others persist `es_eventual=false`.
+ * `fecha_carga` overrides the effective load date (defaults to importDate).
+ */
+export interface ImportFileOptions {
+  nro_expediente?: string;
+  fecha_carga?: Date;
+}
+
 // ─── Import Result ────────────────────────────────────────────────────────────
 
 export interface ImportSummary {

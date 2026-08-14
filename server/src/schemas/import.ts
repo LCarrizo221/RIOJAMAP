@@ -99,9 +99,12 @@ export const importRowSchema = z.object({
 /**
  * POST /api/import request body (text fields only).
  * Multer handles binary file validation — z.instanceof(File) is intentionally absent.
+ * `nro_expediente`/`fecha_carga` enable eventual import mode (see eventual-movements spec).
  */
 export const importRequestSchema = z.object({
   import_date: z.coerce.date().optional(),
+  nro_expediente: z.string().optional(),
+  fecha_carga: z.coerce.date().optional(),
 });
 
 /**
@@ -123,6 +126,8 @@ export const importSummarySchema = z.object({
   matched_by_name: z.number(),
   unmatched: z.number(),
   ambiguous: z.number(),
+  /** Rows persisted with es_eventual=true during an eventual import — optional. */
+  eventual_matched: z.number().optional(),
   warnings: z.array(z.string()),
 });
 
@@ -184,6 +189,27 @@ export const tableListResponseSchema = z.object({
   eventual_total: z.number(),
 });
 
+// ─── Manual Row Creation (POST /api/import/tables/:tableName/rows) ─────────────
+
+/**
+ * Body for manual ADMIN row creation: base row fields minus
+ * id/version/imported_from/createdAt (server-managed), plus optional
+ * `fecha_carga` (defaults to current date) and `es_eventual` (defaults to false).
+ * `person_id` is required for Type2 tables — enforced in the controller.
+ */
+export const createTableRowSchema = z.object({
+  expediente: z.string().min(1),
+  nombre: z.string().nullable().optional(),
+  referente: z.string().nullable().optional(),
+  detalle: z.string().nullable().optional(),
+  monto_total: z.number().default(0),
+  monto_parcial: z.number().default(0),
+  saldo: z.number().default(0),
+  fecha_carga: z.coerce.date().optional(),
+  es_eventual: z.boolean().optional(),
+  person_id: z.number().optional(),
+});
+
 // ─── Inferred TypeScript Types ────────────────────────────────────────────────
 
 export type ImportRow = z.infer<typeof importRowSchema>;
@@ -196,4 +222,5 @@ export type VersionHistoryRow = z.infer<typeof versionHistoryRowSchema>;
 export type VersionHistoryResponse = z.infer<typeof versionHistoryResponseSchema>;
 export type TableListQuery = z.infer<typeof tableListQuerySchema>;
 export type TableListResponse = z.infer<typeof tableListResponseSchema>;
+export type CreateTableRow = z.infer<typeof createTableRowSchema>;
 export type Person = z.infer<typeof personSchema>;

@@ -28,11 +28,12 @@
  *         detected as the first row with ≥ 2 non-empty cells; columns mapped
  *         case/alias-insensitively. Preserved for backward compatibility.
  *
- *   2. importFile(buffer, importDate, sourceFileName) — processes rows in
+ *   2. importFile(buffer, importDate, sourceFileName, opts?) — processes rows in
  *      chunks of 100; for each row individually wrapped in try/catch so one
  *      bad row never aborts the entire import; calls the version → audit
  *      pipeline (matching is skipped for parse-tagged rows); builds and
- *      returns an ImportResult summary.
+ *      returns an ImportResult summary. `opts.nro_expediente`/`opts.fecha_carga`
+ *      enable eventual mode (es_eventual tagging + summary counter).
  *
  * Dependencies (injected via constructor):
  *   - PrismaClient            (passed through to sub-services)
@@ -48,7 +49,7 @@
 
 import ExcelJS from 'exceljs';
 import type { PrismaClient } from '@prisma/client';
-import type { ImportRow, ImportResult, TableType, VersionedRowResult } from './types.js';
+import type { ImportRow, ImportResult, TableType, VersionedRowResult, ImportFileOptions } from './types.js';
 import type { MatchingService } from './MatchingService.js';
 import type { VersioningService } from './VersioningService.js';
 import type { ReportesHistoricoService } from './ReportesHistoricoService.js';
@@ -229,6 +230,12 @@ interface ParseResult {
   warnings: string[];
 }
 
+/** Per-row write context (eventual mode) threaded through to _toRowData. */
+interface RowWriteContext {
+  fecha_carga: Date;
+  es_eventual: boolean;
+}
+
 export class ImportExcelService {
   /** Person registry cache: table_name_alias → id. Filled lazily on first Type2 sheet. */
   private personIdCache: Map<string, number> | null = null;
@@ -287,6 +294,9 @@ export class ImportExcelService {
    *   3. version()        → create or upsert DB row when written.
    *   4. historico.log()  → ALWAYS fires, regardless of outcome.
    *
+   * Optional `opts` (eventual mode): rows whose parsed expediente equals nro_expediente
+   * (trim, case-insensitive) persist es_eventual=true; fecha_carga overrides the date.
+   *
    * One bad row never aborts the import (individual try/catch per row).
    * Rows are processed in CHUNK_SIZE batches for memory efficiency.
    */
@@ -294,8 +304,15 @@ export class ImportExcelService {
     buffer: Buffer,
     importDate: Date,
     sourceFileName: string,
+    opts?: ImportFileOptions,
   ): Promise<ImportResult> {
     const { rows, warnings } = await this.parseFile(buffer);
+
+    // Normalized eventual key: only non-empty nro_expediente enables eventual mode.
+    const eventualKey =
+      opts?.nro_expediente !== undefined && opts.nro_expediente.trim() !== ''
+        ? opts.nro_expediente.trim().toLowerCase()
+        : undefined;
 
     const result: ImportResult = {
       success: true,
@@ -305,18 +322,29 @@ export class ImportExcelService {
         matched_by_name:         0,
         unmatched:               0,
         ambiguous:               0,
+        ...(eventualKey !== undefined ? { eventual_matched: 0 } : {}),
         warnings:                [...warnings],
       },
       updated_rows: [],
       errors:       [],
     };
 
+    // Spec decision: effective fecha_carga = opts.fecha_carga ?? importDate.
+    const effectiveFechaCarga = opts?.fecha_carga ?? importDate;
+
     // Process in chunks of CHUNK_SIZE
     for (let chunkStart = 0; chunkStart < rows.length; chunkStart += CHUNK_SIZE) {
       const chunk = rows.slice(chunkStart, chunkStart + CHUNK_SIZE);
 
       for (const row of chunk) {
-        await this._processRow(row, importDate, sourceFileName, result);
+        const esEventual =
+          eventualKey !== undefined &&
+          row.expediente !== undefined &&
+          row.expediente.trim().toLowerCase() === eventualKey;
+        await this._processRow(row, importDate, sourceFileName, result, {
+          fecha_carga: effectiveFechaCarga,
+          es_eventual: esEventual,
+        });
       }
     }
 
@@ -579,17 +607,23 @@ export class ImportExcelService {
     importDate: Date,
     sourceFileName: string,
     result: ImportResult,
+    ctx: RowWriteContext,
   ): Promise<void> {
     let versionResult: VersionedRowResult | null = null;
     let warnings: string | undefined;
 
     try {
       const outcome = row.table_name
-        ? await this._processTaggedRow(row, importDate, result)
-        : await this._processMatchedRow(row, importDate, result);
+        ? await this._processTaggedRow(row, importDate, result, ctx)
+        : await this._processMatchedRow(row, importDate, result, ctx);
 
       versionResult = outcome.versionResult;
       warnings = outcome.warnings;
+
+      // Eventual counter: only rows actually persisted with es_eventual=true.
+      if (ctx.es_eventual && versionResult !== null) {
+        result.summary.eventual_matched = (result.summary.eventual_matched ?? 0) + 1;
+      }
 
       // ── Audit log (ALWAYS — for every row, every outcome) ────────────────
       await this.historicoService.log({
@@ -642,6 +676,7 @@ export class ImportExcelService {
     row: ImportRow,
     importDate: Date,
     result: ImportResult,
+    ctx: RowWriteContext,
   ): Promise<{ versionResult: VersionedRowResult | null; warnings?: string }> {
     const tableName = row.table_name!;
 
@@ -656,7 +691,7 @@ export class ImportExcelService {
       const { id, version } = await this.versioningService.upsertGenericRow(
         tableName,
         row.expediente,
-        this._toRowData(row),
+        this._toRowData(row, ctx),
       );
       const versionResult = this.versioningService.buildResult(
         tableName,
@@ -704,7 +739,7 @@ export class ImportExcelService {
       );
       const { id, version } = await this.versioningService.createVersionedRow(
         tableName,
-        { ...this._toRowData(row), expediente, person_id: row.person_id },
+        { ...this._toRowData(row, ctx), expediente, person_id: row.person_id },
         latestVersion + 1,
         'INFORME_DIARIO',
       );
@@ -736,6 +771,7 @@ export class ImportExcelService {
     row: ImportRow,
     importDate: Date,
     result: ImportResult,
+    ctx: RowWriteContext,
   ): Promise<{ versionResult: VersionedRowResult | null; warnings?: string }> {
     const match = await this.matchingService.match(row);
 
@@ -747,7 +783,7 @@ export class ImportExcelService {
           const { id, version } = await this.versioningService.upsertGenericRow(
             match.table_name,
             row.expediente!,
-            this._toRowData(row),
+            this._toRowData(row, ctx),
           );
           const versionResult = this.versioningService.buildResult(
             match.table_name,
@@ -786,7 +822,7 @@ export class ImportExcelService {
           );
           const { id, version } = await this.versioningService.createVersionedRow(
             match.table_name,
-            { ...this._toRowData(row), person_id: personId },
+            { ...this._toRowData(row, ctx), person_id: personId },
             latestVersion + 1,
             'INFORME_DIARIO',
           );
@@ -833,7 +869,7 @@ export class ImportExcelService {
           );
           const { id, version } = await this.versioningService.createVersionedRow(
             match.table_name,
-            { ...this._toRowData(row), expediente, person_id: personId },
+            { ...this._toRowData(row, ctx), expediente, person_id: personId },
             latestVersion + 1,
             'INFORME_DIARIO',
           );
@@ -897,8 +933,9 @@ export class ImportExcelService {
   /**
    * Converts an ImportRow into a plain data object suitable for Prisma create/upsert.
    * Excludes `fecha`, `raw`, `table_name` and `person_id` (pipeline-internal fields).
+   * `ctx` carries the effective `fecha_carga` and the `es_eventual` flag to persist.
    */
-  private _toRowData(row: ImportRow): Record<string, unknown> {
+  private _toRowData(row: ImportRow, ctx: RowWriteContext): Record<string, unknown> {
     return {
       expediente:   row.expediente,
       nombre:       row.nombre   ?? null,
@@ -907,6 +944,8 @@ export class ImportExcelService {
       monto_total:  row.monto_total,
       monto_parcial: row.monto_parcial,
       saldo:        row.saldo,
+      fecha_carga:  ctx.fecha_carga,
+      es_eventual:  ctx.es_eventual,
     };
   }
 }

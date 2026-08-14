@@ -81,3 +81,95 @@ describe('ImportExcelService.parseFile', () => {
     expect(rows).toHaveLength(0);
   });
 });
+
+describe('ImportExcelService.importFile — eventual mode (slice 2)', () => {
+  let service: ImportExcelService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockVersioningService.upsertGenericRow.mockResolvedValue({ id: 1, version: 3 });
+    mockVersioningService.buildResult.mockImplementation(
+      (tableName: string, tableType: string, rowId: number, expediente: string | undefined, version: number, matchedBy: string, createdAt: Date) => ({
+        table_type: tableType,
+        table_name: tableName,
+        row_id: rowId,
+        expediente,
+        version_created: version,
+        matched_by: matchedBy,
+        created_at: createdAt.toISOString(),
+      }),
+    );
+    service = new ImportExcelService(
+      {} as any,
+      mockMatchingService,
+      mockVersioningService,
+      mockHistoricoService,
+      mockNameService,
+    );
+  });
+
+  async function buildBuffer(): Promise<Buffer> {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Sheet1');
+    ws.addRow(['Fecha', 'Expediente', 'Nombre', 'Monto_Total']);
+    // Padded expediente on purpose: proves trim (and lowercase opts) matching.
+    ws.addRow(['2026-08-06', '  EXP-42  ', 'Juan Pérez', 1000]);
+    ws.addRow(['2026-08-06', 'OTHER-1', 'Ana Gómez', 500]);
+    return wb.xlsx.writeBuffer() as unknown as Promise<Buffer>;
+  }
+
+  it('tags rows matching nro_expediente es_eventual=true and counts eventual_matched', async () => {
+    mockMatchingService.match.mockResolvedValue({
+      match_type: 'expediente_exact',
+      table_type: 'Type1',
+      table_name: 'expedientes',
+    });
+    const importDate = new Date('2026-08-06T12:00:00Z');
+
+    const result = await service.importFile(await buildBuffer(), importDate, 'test.xlsx', {
+      nro_expediente: ' exp-42 ', // lowercase + padded → trim + case-insensitive match
+    });
+
+    expect(result.summary.eventual_matched).toBe(1);
+    expect(mockVersioningService.upsertGenericRow).toHaveBeenCalledTimes(2);
+
+    const [, , eventualRowData] = mockVersioningService.upsertGenericRow.mock.calls[0];
+    expect(eventualRowData.es_eventual).toBe(true);
+    expect(eventualRowData.fecha_carga).toEqual(importDate);
+
+    const [, , normalRowData] = mockVersioningService.upsertGenericRow.mock.calls[1];
+    expect(normalRowData.es_eventual).toBe(false);
+  });
+
+  it('normal import (no nro_expediente) persists es_eventual=false and omits eventual_matched', async () => {
+    mockMatchingService.match.mockResolvedValue({
+      match_type: 'expediente_exact',
+      table_type: 'Type1',
+      table_name: 'expedientes',
+    });
+
+    const result = await service.importFile(await buildBuffer(), new Date('2026-08-06T12:00:00Z'), 'test.xlsx');
+
+    expect(result.summary.eventual_matched).toBeUndefined();
+    const [, , rowData] = mockVersioningService.upsertGenericRow.mock.calls[0];
+    expect(rowData.es_eventual).toBe(false);
+  });
+
+  it('prefers opts.fecha_carga over importDate as effective fecha_carga', async () => {
+    mockMatchingService.match.mockResolvedValue({
+      match_type: 'expediente_exact',
+      table_type: 'Type1',
+      table_name: 'expedientes',
+    });
+    const importDate = new Date('2026-08-06T12:00:00Z');
+    const optsFechaCarga = new Date('2026-08-01T00:00:00Z');
+
+    await service.importFile(await buildBuffer(), importDate, 'test.xlsx', {
+      nro_expediente: 'EXP-42',
+      fecha_carga: optsFechaCarga,
+    });
+
+    const [, , rowData] = mockVersioningService.upsertGenericRow.mock.calls[0];
+    expect(rowData.fecha_carga).toEqual(optsFechaCarga);
+  });
+});
