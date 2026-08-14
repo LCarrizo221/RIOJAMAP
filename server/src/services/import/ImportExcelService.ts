@@ -55,6 +55,7 @@ import type { VersioningService } from './VersioningService.js';
 import type { ReportesHistoricoService } from './ReportesHistoricoService.js';
 import type { NameNormalizationService } from './NameNormalizationService.js';
 import { GENERIC_TABLES, PERSON_TABLES } from './types.js';
+import { ExpedienteNormalizationService } from './ExpedienteNormalizationService.js';
 
 // ─── Format / Sheet constants ─────────────────────────────────────────────────
 
@@ -243,6 +244,8 @@ export class ImportExcelService {
   /** Monotonic counter for last-resort synthetic expediente keys. */
   private fallbackKeyCounter = 0;
 
+  private readonly expedienteNormalizer = new ExpedienteNormalizationService();
+
   constructor(
     private readonly prisma: PrismaClient,
     private readonly matchingService: MatchingService,
@@ -311,7 +314,7 @@ export class ImportExcelService {
     // Normalized eventual key: only non-empty nro_expediente enables eventual mode.
     const eventualKey =
       opts?.nro_expediente !== undefined && opts.nro_expediente.trim() !== ''
-        ? opts.nro_expediente.trim().toLowerCase()
+        ? (this.expedienteNormalizer.normalize(opts.nro_expediente.trim()) ?? opts.nro_expediente.trim()).toLowerCase()
         : undefined;
 
     const result: ImportResult = {
@@ -560,7 +563,10 @@ export class ImportExcelService {
       return idx !== undefined ? values[idx] : undefined;
     };
 
-    const expediente = toStringOrUndefined(get('expediente'));
+    const rawExpediente = toStringOrUndefined(get('expediente'));
+    const expediente = rawExpediente
+      ? (this.expedienteNormalizer.normalize(rawExpediente) ?? undefined)
+      : undefined;
     const nombre     = toStringOrUndefined(get('nombre'));
     const referente  = toStringOrUndefined(get('referente'));
     const detalle    = toStringOrUndefined(get('detalle'));
