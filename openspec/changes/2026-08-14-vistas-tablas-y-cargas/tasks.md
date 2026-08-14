@@ -42,11 +42,11 @@ Done: R1 null load date; R2 paginate/filter/reject; R3 USER list 200.
 
 Done: R3 403, R4 tag/reset/`eventual_matched`, R5 create/409.
 
-- [ ] 2.1 `schemas/import.ts`: `importRequestSchema` + `nro_expediente`/`fecha_carga`; summary + `eventual_matched`; `createTableRowSchema` (minus id/version/imported_from/createdAt, + `fecha_carga`/`es_eventual`, Type2 `person_id`)
-- [ ] 2.2 `ImportExcelService.ts`: `importFile(..., opts)`; predicate (trim, case-insensitive); `_toRowData(row, ctx)`; counter
-- [ ] 2.3 `importController.ts`: `uploadFile` passes opts; `createTableRow` — Type1 409, Type2 400 `INVALID_PERSON`, `createVersionedRow(..., 'MANUAL')` + audit → 201
-- [ ] 2.4 `routes/import.ts`: `authorize('ADMIN')` on `POST /`; `POST /tables/:tableName/rows` (authenticate + ADMIN)
-- [ ] 2.5 supertest: USER 403 (no audit); Type1 409; Type2 201 + audit; `eventual_matched`; reset re-import
+- [x] 2.1 `schemas/import.ts`: `importRequestSchema` + `nro_expediente`/`fecha_carga`; summary + `eventual_matched`; `createTableRowSchema` (minus id/version/imported_from/createdAt, + `fecha_carga`/`es_eventual`, Type2 `person_id`)
+- [x] 2.2 `ImportExcelService.ts`: `importFile(..., opts)`; predicate (trim, case-insensitive); `_toRowData(row, ctx)`; counter
+- [x] 2.3 `importController.ts`: `uploadFile` passes opts; `createTableRow` — Type1 409, Type2 400 `INVALID_PERSON`, `createVersionedRow(..., 'MANUAL')` + audit → 201
+- [x] 2.4 `routes/import.ts`: `authorize('ADMIN')` on `POST /`; `POST /tables/:tableName/rows` (authenticate + ADMIN)
+- [x] 2.5 supertest: USER 403 (no audit); Type1 409; Type2 201 + audit; `eventual_matched`; reset re-import
 
 ## Slice 3 — Client Contracts & API (PR 3)
 
