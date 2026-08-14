@@ -21,20 +21,39 @@ const API_BASE = '/api/import';
 
 // ─── POST /api/import ─────────────────────────────────────────────────────────
 
+/** Optional fields for POST /api/import — `nro_expediente`/`fecha_carga` enable eventual mode. */
+export interface ImportRequestOptions {
+  /** Import date (defaults to server's current date). */
+  importDate?: Date;
+  /** When present, rows whose expediente matches it (trim, case-insensitive) persist es_eventual=true. */
+  nro_expediente?: string;
+  /** Load date tag (ISO string); defaults to importDate. */
+  fecha_carga?: string;
+}
+
 /**
  * Upload and process an Excel (.xlsx) file.
  *
  * IMPORTANT: Do NOT set Content-Type manually — the browser sets
  * `multipart/form-data; boundary=...` automatically when body is FormData.
  *
- * @param file       The .xlsx File object from an <input type="file">
- * @param importDate Optional import date (defaults to server's current date)
+ * @param file    The .xlsx File object from an <input type="file">
+ * @param options Optional import flags (importDate, eventual nro_expediente/fecha_carga)
  */
-export async function postImport(file: File, importDate?: Date): Promise<ImportResponse> {
+export async function postImport(
+  file: File,
+  options: ImportRequestOptions = {},
+): Promise<ImportResponse> {
   const formData = new FormData();
   formData.append('file', file);
-  if (importDate) {
-    formData.append('import_date', importDate.toISOString());
+  if (options.importDate) {
+    formData.append('import_date', options.importDate.toISOString());
+  }
+  if (options.nro_expediente) {
+    formData.append('nro_expediente', options.nro_expediente);
+  }
+  if (options.fecha_carga) {
+    formData.append('fecha_carga', options.fecha_carga);
   }
 
   const response = await fetch(`${API_BASE}`, {
