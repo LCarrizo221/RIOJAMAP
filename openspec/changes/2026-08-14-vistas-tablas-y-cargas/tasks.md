@@ -29,14 +29,14 @@ Chain strategy: pending
 
 Done: R1 null load date; R2 paginate/filter/reject; R3 USER list 200.
 
-- [ ] 1.1 `server/prisma/schema.prisma`: add `fecha_carga` + `es_eventual @default(false)` to 14 models; Type2 `@@index([es_eventual])`/`@@index([fecha_carga])`; `npx prisma migrate dev --name load_date_eventual` + `prisma generate`
-- [ ] 1.2 `server/src/services/import/types.ts`: `ImportSummary.eventual_matched?: number`
-- [ ] 1.3 Create `TableQueryService.ts`: `list()` + `countEventual()`; whitelist `GENERIC_TABLES ∪ PERSON_TABLES`; `orderBy id desc`; expediente/nombre/es_eventual/fecha_carga filters; pagination
-- [ ] 1.4 `schemas/import.ts`: `tableListQuerySchema` + `tableListResponseSchema` (+`eventual_total`)
-- [ ] 1.5 `importController.ts`: `listTableRows` (400 `INVALID_TABLE`, 500 `FETCH_ERROR`)
-- [ ] 1.6 `server/src/routes/import.ts`: `GET /tables/:tableName` (authenticate)
-- [ ] 1.7 Jest `TableQueryService.test.ts`: 120→3 pages; es_eventual filter; unknown table
-- [ ] 1.8 supertest: 400 `INVALID_TABLE`; USER 200; schema shape
+- [x] 1.1 `server/prisma/schema.prisma`: add `fecha_carga` + `es_eventual @default(false)` to 14 models; Type2 `@@index([es_eventual])`/`@@index([fecha_carga])`; `npx prisma migrate dev --name load_date_eventual` + `prisma generate`
+- [x] 1.2 `server/src/services/import/types.ts`: `ImportSummary.eventual_matched?: number`
+- [x] 1.3 Create `TableQueryService.ts`: `list()` + `countEventual()`; whitelist `GENERIC_TABLES ∪ PERSON_TABLES`; `orderBy id desc`; expediente/nombre/es_eventual/fecha_carga filters; pagination
+- [x] 1.4 `schemas/import.ts`: `tableListQuerySchema` + `tableListResponseSchema` (+`eventual_total`)
+- [x] 1.5 `importController.ts`: `listTableRows` (400 `INVALID_TABLE`, 500 `FETCH_ERROR`)
+- [x] 1.6 `server/src/routes/import.ts`: `GET /tables/:tableName` (authenticate)
+- [x] 1.7 Jest `TableQueryService.test.ts`: 120→3 pages; es_eventual filter; unknown table
+- [x] 1.8 supertest: 400 `INVALID_TABLE`; USER 200; schema shape
 
 ## Slice 2 — Write Paths (PR 2)
 
