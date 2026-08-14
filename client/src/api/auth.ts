@@ -23,9 +23,13 @@ export async function loginApi(email: string, password: string): Promise<void> {
   const contentType = response.headers.get('content-type');
   if (contentType && contentType.includes('application/json')) {
     const data = await response.json();
-    // If backend returns user data, validate it
+    // Login wraps the user in { user: ... }; me returns it directly.
+    // Validate whichever shape the server actually returned.
     if (data && typeof data === 'object') {
-      validateResponse(data, UserSchema);
+      const user = (data as { user?: unknown }).user ?? data;
+      if (user && typeof user === 'object') {
+        validateResponse(user, UserSchema);
+      }
     }
   }
 }
