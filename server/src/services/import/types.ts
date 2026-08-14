@@ -123,6 +123,8 @@ export interface ImportSummary {
   matched_by_name: number;
   unmatched: number;
   ambiguous: number;
+  /** Rows tagged es_eventual=true during an eventual import (nro_expediente mode). */
+  eventual_matched?: number;
   warnings: string[];
 }
 

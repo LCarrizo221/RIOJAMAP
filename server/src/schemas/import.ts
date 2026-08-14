@@ -164,6 +164,38 @@ export const versionHistoryResponseSchema = z.object({
   versions: z.array(versionHistoryRowSchema),
 });
 
+// ─── Table List Views (GET /api/import/tables/:tableName) ─────────────────────
+
+/**
+ * Query parameters for the paginated table listing.
+ * `fecha_carga` is an ISO day (YYYY-MM-DD) — TableQueryService expands it to
+ * the [startOfDay, endOfDay] range over that calendar day.
+ */
+export const tableListQuerySchema = z.object({
+  expediente: z.string().optional(),
+  nombre: z.string().optional(),
+  fecha_carga: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'fecha_carga must be a valid day (YYYY-MM-DD)')
+    .optional(),
+  es_eventual: z.enum(['true', 'false']).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+});
+
+/** GET /api/import/tables/:tableName response (spec: { table_name, data, pagination, eventual_total }). */
+export const tableListResponseSchema = z.object({
+  table_name: z.string(),
+  data: z.array(z.record(z.unknown())),
+  pagination: z.object({
+    page: z.number(),
+    limit: z.number(),
+    total: z.number(),
+    totalPages: z.number(),
+  }),
+  eventual_total: z.number(),
+});
+
 // ─── Inferred TypeScript Types ────────────────────────────────────────────────
 
 export type ImportRow = z.infer<typeof importRowSchema>;
@@ -174,4 +206,6 @@ export type ImportResponse = z.infer<typeof importResponseSchema>;
 export type ReportesHistoricoRow = z.infer<typeof reportesHistoricoSchema>;
 export type VersionHistoryRow = z.infer<typeof versionHistoryRowSchema>;
 export type VersionHistoryResponse = z.infer<typeof versionHistoryResponseSchema>;
+export type TableListQuery = z.infer<typeof tableListQuerySchema>;
+export type TableListResponse = z.infer<typeof tableListResponseSchema>;
 export type Person = z.infer<typeof personSchema>;
