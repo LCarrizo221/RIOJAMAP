@@ -68,6 +68,8 @@ model Expedientes {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   createdAt     DateTime @default(now())
@@ -87,6 +89,8 @@ model ConveniosMunic {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   createdAt     DateTime @default(now())
@@ -105,6 +109,8 @@ model DeudasEXPTES {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   createdAt     DateTime @default(now())
@@ -123,6 +129,8 @@ model Instituciones {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   createdAt     DateTime @default(now())
@@ -141,6 +149,8 @@ model Intendentes026 {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   createdAt     DateTime @default(now())
@@ -159,6 +169,8 @@ model Diputados {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   createdAt     DateTime @default(now())
@@ -179,6 +191,8 @@ model PiniHerrera {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   person_id     Int
@@ -189,6 +203,8 @@ model PiniHerrera {
   @@index([expediente])
   @@index([person_id])
   @@index([version])
+  @@index([es_eventual])
+  @@index([fecha_carga])
   @@unique([expediente, person_id, createdAt])
 }
 
@@ -201,6 +217,8 @@ model GabiPedrali {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   person_id     Int
@@ -211,6 +229,8 @@ model GabiPedrali {
   @@index([expediente])
   @@index([person_id])
   @@index([version])
+  @@index([es_eventual])
+  @@index([fecha_carga])
   @@unique([expediente, person_id, createdAt])
 }
 
@@ -223,6 +243,8 @@ model TeresitaMadera {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   person_id     Int
@@ -233,6 +255,8 @@ model TeresitaMadera {
   @@index([expediente])
   @@index([person_id])
   @@index([version])
+  @@index([es_eventual])
+  @@index([fecha_carga])
   @@unique([expediente, person_id, createdAt])
 }
 
@@ -245,6 +269,8 @@ model FlorenciaLopez {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   person_id     Int
@@ -255,6 +281,8 @@ model FlorenciaLopez {
   @@index([expediente])
   @@index([person_id])
   @@index([version])
+  @@index([es_eventual])
+  @@index([fecha_carga])
   @@unique([expediente, person_id, createdAt])
 }
 
@@ -267,6 +295,8 @@ model GuryCaceres {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   person_id     Int
@@ -277,6 +307,8 @@ model GuryCaceres {
   @@index([expediente])
   @@index([person_id])
   @@index([version])
+  @@index([es_eventual])
+  @@index([fecha_carga])
   @@unique([expediente, person_id, createdAt])
 }
 
@@ -289,6 +321,8 @@ model Dirigentes {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   person_id     Int
@@ -299,6 +333,8 @@ model Dirigentes {
   @@index([expediente])
   @@index([person_id])
   @@index([version])
+  @@index([es_eventual])
+  @@index([fecha_carga])
   @@unique([expediente, person_id, createdAt])
 }
 
@@ -311,6 +347,8 @@ model Romina {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   person_id     Int
@@ -321,6 +359,8 @@ model Romina {
   @@index([expediente])
   @@index([person_id])
   @@index([version])
+  @@index([es_eventual])
+  @@index([fecha_carga])
   @@unique([expediente, person_id, createdAt])
 }
 
@@ -333,6 +373,8 @@ model Misael {
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
+  fecha_carga   DateTime?
+  es_eventual   Boolean  @default(false)
   version       Int      @default(1)
   imported_from String   @default("INFORME_DIARIO")
   person_id     Int
@@ -343,6 +385,8 @@ model Misael {
   @@index([expediente])
   @@index([person_id])
   @@index([version])
+  @@index([es_eventual])
+  @@index([fecha_carga])
   @@unique([expediente, person_id, createdAt])
 }
 
