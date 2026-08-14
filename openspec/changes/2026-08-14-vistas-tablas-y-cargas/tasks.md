@@ -50,12 +50,13 @@ Done: R3 403, R4 tag/reset/`eventual_matched`, R5 create/409.
 
 ## Slice 3 — Client Contracts & API (PR 3)
 
-Done: contracts mirror server `.strict()`; `tsc --noEmit` green.
+Done: contracts mirror server `.strict()` + eventual fields; `postImport` eventual opts; `tables.ts` client API; vitest + `tsc --noEmit` green.
 
-- [ ] 3.1 `client/src/contracts/import.ts`: mirror whitelists; `TableRowContract` (+person_id), `TableListResponseContract`, `CreateRowResponseContract`, `eventual_matched`
-- [ ] 3.2 Create `client/src/api/tables.ts`: `getTableRows`/`createTableRow` via `validateResponse`
-- [ ] 3.3 Vitest `tables.test.ts`: URLs, contract parse, 409/403 mapping
-- [ ] 3.4 Type gate: `cd client && npm run lint`
+- [x] 3.1 `client/src/contracts/import.ts`: espejar whitelists (`TYPE1_TABLES`, `TYPE2_TABLES`, `REPORTES_HISTORICO`, `ALL_IMPORT_TABLES`); `TableListQueryContract`, `TableListResponseContract` (+`eventual_total`), `TableRowContract` (+person_id), `CreateRowResponseContract`, `CreateTableRowContract`, `ImportRequestContract`, summary +`eventual_matched` — todos `.strict()`
+- [x] 3.2 Create `client/src/api/tables.ts`: `getTableRows`/`createTableRow` via `validateResponse`; manejo 400/403/409/500 con mensajes del code server
+- [x] 3.3 `client/src/api/import.ts`: `postImport(file, options)` envía `nro_expediente`/`fecha_carga` (FormData); respuesta tipada con `eventual_matched`
+- [x] 3.4 Vitest `tables.test.ts`: URLs, contract parse, 400 `INVALID_TABLE`, 409 `EXPEDIENTE_EXISTS`, 403 `FORBIDDEN`
+- [x] 3.5 Gate: `cd client && npm run lint` + `npx vitest run src/api/__tests__/tables.test.ts`
 
 ## Slice 4 — UI (PR 4)
 
