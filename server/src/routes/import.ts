@@ -58,4 +58,7 @@ router.get(
   importController.getReportesHistorico,
 );
 
+// GET /api/import/tables/:tableName — read-only listing (ADMIN and USER)
+router.get('/tables/:tableName', authenticate, importController.listTableRows);
+
 export default router;

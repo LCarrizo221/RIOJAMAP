@@ -1,16 +1,10 @@
 /**
- * TableQueryService
- *
  * Read-only listing for the 14 import tables (GET /api/import/tables/:tableName).
- *
- * - Table names are resolved ONLY through the GENERIC_TABLES ∪ PERSON_TABLES
- *   whitelist; anything else throws InvalidTableError (→ 400 INVALID_TABLE).
- *   Dynamic access goes through `(prisma as any)[tableName]` — safe because the
- *   whitelist is enforced before any Prisma call, never interpolated into raw SQL.
- * - Rows are ordered by `id desc` (PK index serves ordering free, design #1).
- * - Filters: expediente / nombre (case-insensitive contains), es_eventual,
- *   fecha_carga (ISO day → [startOfDay, endOfDay] range over the calendar day).
- * - Pagination: page/limit with skip/take; totalPages = ceil(total / limit).
+ * Table names resolve ONLY through the GENERIC_TABLES ∪ PERSON_TABLES whitelist
+ * (anything else throws InvalidTableError → 400 INVALID_TABLE), never interpolated
+ * into raw SQL. Rows are ordered by id desc, filtered by expediente/nombre
+ * (case-insensitive), es_eventual and fecha_carga (ISO day → [startOfDay, endOfDay]),
+ * with page/limit pagination (totalPages = ceil(total / limit)).
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -27,12 +21,11 @@ export class InvalidTableError extends Error {
   }
 }
 
-/** Filter + pagination query for a table listing (shape of tableListQuerySchema). */
+/** Filter + pagination query (shape of tableListQuerySchema). */
 export interface TableListQuery {
   expediente?: string;
   nombre?: string;
-  /** ISO day (YYYY-MM-DD) → expanded to [startOfDay, endOfDay]. */
-  fecha_carga?: string;
+  fecha_carga?: string; // ISO day (YYYY-MM-DD) → expanded to [startOfDay, endOfDay]
   es_eventual?: 'true' | 'false';
   page: number;
   limit: number;
@@ -58,10 +51,7 @@ export class TableQueryService {
     return WHITELIST.has(tableName);
   }
 
-  /**
-   * Paginated listing for one whitelisted table.
-   * @throws InvalidTableError when tableName is not whitelisted.
-   */
+  /** Paginated listing for one whitelisted table; throws InvalidTableError when not whitelisted. */
   async list(tableName: string, q: TableListQuery): Promise<TableListResult> {
     this.assertValidTable(tableName);
 
@@ -90,10 +80,7 @@ export class TableQueryService {
     };
   }
 
-  /**
-   * Total rows with es_eventual=true in a whitelisted table (eventual badge count).
-   * @throws InvalidTableError when tableName is not whitelisted.
-   */
+  /** Total rows with es_eventual=true in a whitelisted table; throws InvalidTableError when not whitelisted. */
   async countEventual(tableName: string): Promise<number> {
     this.assertValidTable(tableName);
 

@@ -5,39 +5,43 @@ import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import ExcelJS from 'exceljs';
 import importRoutes from '../../src/routes/import';
-import { importResponseSchema } from '../../src/schemas/import';
+import { importResponseSchema, tableListResponseSchema } from '../../src/schemas/import';
 
-// Mock controller functions to avoid DB access
-jest.mock('../../src/controllers/importController.ts', () => ({
-  uploadFile: (req: any, res: any) => {
-    res.status(200).json({
-      success: true,
-      summary: {
-        total_rows: 0,
-        matched_by_expediente: 0,
-        matched_by_name: 0,
-        unmatched: 0,
-        ambiguous: 0,
-        warnings: []
-      },
-      updated_rows: []
-    });
-  },
-  getExpedienteVersions: (req: any, res: any) => {
-    res.json({ expediente: req.params.numero, tables: [] });
-  },
-  getPersonVersions: (req: any, res: any) => {
-    res.json({ person_id: parseInt(req.params.personId, 10), table_name: req.params.tableName, versions: [] });
-  },
-  getReportesHistorico: (req: any, res: any) => {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 50;
-    res.json({
-      data: [],
-      pagination: { page, limit, total: 0, totalPages: 0 }
-    });
-  }
+// Mock Prisma so the real listTableRows (whitelist + pagination) runs against fake data.
+jest.mock('@prisma/client', () => ({
+  PrismaClient: jest.fn().mockImplementation(() => ({
+    expedientes: {
+      count: jest.fn().mockResolvedValue(2),
+      findMany: jest.fn().mockResolvedValue([
+        { id: 2, expediente: 'EXP-42', es_eventual: true },
+        { id: 1, expediente: 'EXP-1', es_eventual: false },
+      ]),
+    },
+    $disconnect: jest.fn().mockResolvedValue(undefined),
+  })),
 }));
+
+// Partial mock: keep the real listTableRows, stub only the DB-touching handlers.
+jest.mock('../../src/controllers/importController.ts', () => {
+  const actual = jest.requireActual('../../src/controllers/importController.ts');
+  return {
+    ...actual,
+    uploadFile: (req: any, res: any) => {
+      res.status(200).json({
+        success: true,
+        summary: { total_rows: 0, matched_by_expediente: 0, matched_by_name: 0, unmatched: 0, ambiguous: 0, warnings: [] },
+        updated_rows: []
+      });
+    },
+    getExpedienteVersions: (req: any, res: any) => res.json({ expediente: req.params.numero, tables: [] }),
+    getPersonVersions: (req: any, res: any) => res.json({ person_id: parseInt(req.params.personId, 10), table_name: req.params.tableName, versions: [] }),
+    getReportesHistorico: (req: any, res: any) => {
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 50;
+      res.json({ data: [], pagination: { page, limit, total: 0, totalPages: 0 } });
+    }
+  };
+});
 
 const JWT_SECRET = 'test-secret';
 process.env.JWT_SECRET = JWT_SECRET;
@@ -121,5 +125,28 @@ describe('Import API integration tests', () => {
     const results = await Promise.all(promises);
     const last = results[results.length - 1];
     expect(last.status).toBe(429);
+  });
+});
+
+describe('GET /api/import/tables/:tableName', () => {
+  const app = createApp();
+
+  it('rejects an unknown table with 400 INVALID_TABLE', async () => {
+    const res = await request(app)
+      .get('/api/import/tables/hackers')
+      .set('Cookie', authCookie());
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('INVALID_TABLE');
+  });
+
+  it('lets USER read rows and matches the spec response shape', async () => {
+    const token = jwt.sign({ id: 2, email: 'user@example.com', name: 'User', role: 'USER' }, JWT_SECRET, { expiresIn: '1h' });
+    const res = await request(app)
+      .get('/api/import/tables/expedientes?page=1&limit=50')
+      .set('Cookie', `riojamap_token=${token}`);
+    expect(res.status).toBe(200);
+    expect(() => tableListResponseSchema.parse(res.body)).not.toThrow();
+    expect(res.body).toMatchObject({ table_name: 'expedientes', eventual_total: 2 });
+    expect(res.body.pagination).toMatchObject({ page: 1, limit: 50, total: 2, totalPages: 1 });
   });
 });

@@ -15,12 +15,13 @@
 import { Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { PrismaClient } from '@prisma/client';
-import { importRequestSchema, importResponseSchema } from '../schemas/import.js';
+import { importRequestSchema, importResponseSchema, tableListQuerySchema } from '../schemas/import.js';
 import { ImportExcelService } from '../services/import/ImportExcelService.js';
 import { MatchingService } from '../services/import/MatchingService.js';
 import { VersioningService } from '../services/import/VersioningService.js';
 import { ReportesHistoricoService } from '../services/import/ReportesHistoricoService.js';
 import { NameNormalizationService } from '../services/import/NameNormalizationService.js';
+import { TableQueryService, InvalidTableError } from '../services/import/TableQueryService.js';
 import { GENERIC_TABLES, PERSON_TABLES } from '../services/import/types.js';
 
 // ─── POST /api/import ─────────────────────────────────────────────────────────
@@ -226,5 +227,36 @@ export const getReportesHistorico = async (req: Request, res: Response): Promise
   } catch (err) {
     console.error('Error fetching reportes historico:', err);
     res.status(500).json({ error: 'Failed to fetch reportes historico', code: 'FETCH_ERROR' });
+  }
+};
+
+// ─── GET /api/import/tables/:tableName ────────────────────────────────────────
+// Whitelisted (GENERIC_TABLES ∪ PERSON_TABLES) paginated listing — unknown → 400 INVALID_TABLE.
+export const listTableRows = async (req: Request, res: Response): Promise<void> => {
+  const tableName = String(req.params.tableName);
+
+  const parsed = tableListQuerySchema.safeParse(req.query);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Invalid query parameters', code: 'VALIDATION_ERROR', details: parsed.error.errors });
+    return;
+  }
+
+  try {
+    const prisma = new PrismaClient();
+    const tableQueryService = new TableQueryService(prisma);
+    const [listResult, eventualTotal] = await Promise.all([
+      tableQueryService.list(tableName, parsed.data),
+      tableQueryService.countEventual(tableName),
+    ]);
+    await prisma.$disconnect();
+
+    res.status(200).json({ table_name: tableName, ...listResult, eventual_total: eventualTotal });
+  } catch (err) {
+    if (err instanceof InvalidTableError) {
+      res.status(400).json({ error: err.message, code: 'INVALID_TABLE' });
+      return;
+    }
+    console.error('Error listing table rows:', err);
+    res.status(500).json({ error: 'Failed to fetch table rows', code: 'FETCH_ERROR' });
   }
 };
