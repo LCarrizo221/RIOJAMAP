@@ -140,4 +140,34 @@ describe('ImportExcelService _processRow branches', () => {
     expect(result.errors.length).toBe(1);
     expect(historicoMock.log).toHaveBeenCalled();
   });
+
+  it('falls back to form expediente in historico when row has none', async () => {
+    const matchingMock = { match: jest.fn().mockResolvedValue({ match_type: 'no_match' }) } as any;
+    const versioningMock = {} as any;
+    const historicoMock = { log: jest.fn().mockResolvedValue(undefined) } as any;
+    const nameServiceMock = {} as any;
+    const service = new ImportExcelService({} as any, matchingMock, versioningMock, historicoMock, nameServiceMock);
+    const result = JSON.parse(JSON.stringify(baseResult));
+    // Row without an expediente (e.g. positional INFORME DIARIO)
+    const row = makeRow({ expediente: undefined });
+    await (service as any)._processRow(row, importDate, sourceFile, result, writeCtx, 'H11-02353-2-26');
+
+    expect(result.summary.unmatched).toBe(1);
+    const logCall = historicoMock.log.mock.calls[0][0];
+    expect(logCall.expediente).toBe('H11-02353-2-26');
+  });
+
+  it('does not overwrite row expediente with form expediente in historico', async () => {
+    const matchingMock = { match: jest.fn().mockResolvedValue({ match_type: 'no_match' }) } as any;
+    const versioningMock = {} as any;
+    const historicoMock = { log: jest.fn().mockResolvedValue(undefined) } as any;
+    const nameServiceMock = {} as any;
+    const service = new ImportExcelService({} as any, matchingMock, versioningMock, historicoMock, nameServiceMock);
+    const result = JSON.parse(JSON.stringify(baseResult));
+    const row = makeRow({ expediente: 'H11-REAL-1-26' });
+    await (service as any)._processRow(row, importDate, sourceFile, result, writeCtx, 'H11-FORM-2-26');
+
+    const logCall = historicoMock.log.mock.calls[0][0];
+    expect(logCall.expediente).toBe('H11-REAL-1-26');
+  });
 });

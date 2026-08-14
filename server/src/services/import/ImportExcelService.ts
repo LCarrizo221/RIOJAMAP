@@ -312,10 +312,18 @@ export class ImportExcelService {
     const { rows, warnings } = await this.parseFile(buffer);
 
     // Normalized eventual key: only non-empty nro_expediente enables eventual mode.
-    const eventualKey =
+    // The form expediente is normalized to canonical form ONCE: lowercased for the
+    // eventual-key comparison, and canonical (preserved case) reused as a fallback
+    // expediente when a parsed row carries none (e.g. positional informe diario,
+    // which has no expediente column in the source file).
+    const formExpedienteCanonical =
       opts?.nro_expediente !== undefined && opts.nro_expediente.trim() !== ''
-        ? (this.expedienteNormalizer.normalize(opts.nro_expediente.trim()) ?? opts.nro_expediente.trim()).toLowerCase()
+        ? (this.expedienteNormalizer.normalize(opts.nro_expediente.trim()) ??
+          opts.nro_expediente.trim())
         : undefined;
+    const eventualKey = formExpedienteCanonical
+      ? formExpedienteCanonical.toLowerCase()
+      : undefined;
 
     const result: ImportResult = {
       success: true,
@@ -344,10 +352,14 @@ export class ImportExcelService {
           eventualKey !== undefined &&
           row.expediente !== undefined &&
           row.expediente.trim().toLowerCase() === eventualKey;
-        await this._processRow(row, importDate, sourceFileName, result, {
-          fecha_carga: effectiveFechaCarga,
-          es_eventual: esEventual,
-        });
+      await this._processRow(
+        row,
+        importDate,
+        sourceFileName,
+        result,
+        { fecha_carga: effectiveFechaCarga, es_eventual: esEventual },
+        formExpedienteCanonical,
+      );
       }
     }
 
@@ -614,6 +626,7 @@ export class ImportExcelService {
     sourceFileName: string,
     result: ImportResult,
     ctx: RowWriteContext,
+    formExpediente?: string,
   ): Promise<void> {
     let versionResult: VersionedRowResult | null = null;
     let warnings: string | undefined;
@@ -633,7 +646,7 @@ export class ImportExcelService {
 
       // ── Audit log (ALWAYS — for every row, every outcome) ────────────────
       await this.historicoService.log({
-        expediente:            row.expediente,
+        expediente:            row.expediente ?? formExpediente ?? undefined,
         nombre:                row.nombre,
         referente:             row.referente,
         monto_total:           row.monto_total,
@@ -655,7 +668,7 @@ export class ImportExcelService {
 
       // Best-effort audit log even on row error
       await this.historicoService.log({
-        expediente:            row.expediente,
+        expediente:            row.expediente ?? formExpediente ?? undefined,
         nombre:                row.nombre,
         referente:             row.referente,
         monto_total:           row.monto_total,
