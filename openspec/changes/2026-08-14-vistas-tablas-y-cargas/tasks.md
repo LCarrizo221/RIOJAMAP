@@ -60,13 +60,13 @@ Done: contracts mirror server `.strict()` + eventual fields; `postImport` eventu
 
 ## Slice 4 — UI (PR 4)
 
-Done: R2 views; R3 ADMIN button; R5 badge + create.
+Done: tabs Cargar/Ver tablas (ADMIN-only upload); TableBrowser 15 tabs + ReportesHistorico readonly; DataTable + AddRowModal; `tsc --noEmit` + vitest green.
 
-- [ ] 4.1 `ImportPage.tsx`: tabs Cargar / Ver tablas; pass `user.role`
-- [ ] 4.2 Create `TableBrowser.tsx`: 14-table selector + ReportesHistorico
-- [ ] 4.3 Create `DataTable.tsx`: columns config, filters, pagination, badge, `eventual_total`
-- [ ] 4.4 Create `AddRowModal.tsx`: form; Type2 `person_id`; es_eventual toggle
-- [ ] 4.5 Verify `npm run lint && npm test` + manual UI
+- [x] 4.1 `ImportPage.tsx`: tabs Cargar / Ver tablas; pass `user.role`
+- [x] 4.2 Create `TableBrowser.tsx`: 14-table selector + ReportesHistorico
+- [x] 4.3 Create `DataTable.tsx`: columns config, filters, pagination, badge, `eventual_total`
+- [x] 4.4 Create `AddRowModal.tsx`: form; Type2 `person_id`; es_eventual toggle
+- [x] 4.5 Verify `npm run lint && npm test` + manual UI
 
 ## Dependencies
 
