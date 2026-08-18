@@ -65,6 +65,7 @@ model Expedientes {
   nombre        String?
   referente     String?
   detalle       String?
+  municipio     String?
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
@@ -86,6 +87,7 @@ model ConveniosMunic {
   nombre        String?
   referente     String?
   detalle       String?
+  municipio     String?
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
@@ -98,6 +100,7 @@ model ConveniosMunic {
 
   @@index([expediente])
   @@index([version])
+  @@index([municipio])
 }
 
 model DeudasEXPTES {
@@ -106,6 +109,7 @@ model DeudasEXPTES {
   nombre        String?
   referente     String?
   detalle       String?
+  municipio     String?
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
@@ -126,6 +130,7 @@ model Instituciones {
   nombre        String?
   referente     String?
   detalle       String?
+  municipio     String?
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
@@ -146,6 +151,7 @@ model Intendentes026 {
   nombre        String?
   referente     String?
   detalle       String?
+  municipio     String?
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)
@@ -166,6 +172,7 @@ model Diputados {
   nombre        String?
   referente     String?
   detalle       String?
+  municipio     String?
   monto_total   Float    @default(0)
   monto_parcial Float    @default(0)
   saldo         Float    @default(0)

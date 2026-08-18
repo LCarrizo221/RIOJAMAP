@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AuthGuard } from './components/auth/AuthGuard';
 import { LoginPage } from './components/auth/LoginPage';
@@ -42,7 +42,15 @@ function MapApp() {
           <p className="text-amber-500 font-mono text-xs tracking-widest uppercase mb-1">Sistema de Información Geográfica</p>
           <h1 className="text-2xl lg:text-4xl font-serif tracking-tight font-light">Observatorio La Rioja</h1>
         </div>
-        <UserMenu />
+        <div className="flex items-center gap-4">
+          <Link
+            to="/import"
+            className="border border-amber-500/50 px-4 py-2 text-xs font-mono uppercase tracking-wider text-amber-400 transition-colors hover:border-amber-400 hover:bg-amber-500/10 hover:text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0e]"
+          >
+            Importar datos
+          </Link>
+          <UserMenu />
+        </div>
       </header>
       
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">

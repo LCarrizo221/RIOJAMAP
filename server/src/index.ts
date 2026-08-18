@@ -10,15 +10,28 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3003;
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://localhost:5173',
+  'http://localhost:3000',
+  'https://riojamap.devlab1.online',
+  'https://6fbrnqmj-5173.brs.devtunnels.ms',
+  'https://6fbrnqmj-3003.brs.devtunnels.ms'
+];
 
 // Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://riojamap.devlab1.online'
-  ],
-  credentials: true
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(express.json());
 app.use(cookieParser());
@@ -39,6 +52,7 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
+  console.log(`Local access: http://localhost:${PORT}`);
 });
