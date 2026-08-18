@@ -4,7 +4,7 @@
       "type": "Feature",
       "properties": {
         "id": 395,
-        "departamento": "CORONEL FELIPE VARELA",
+        "departamento": "coronel felipe varela",
         "cabecera": "VILLA UNION",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 5.7,
@@ -5982,7 +5982,7 @@
       "type": "Feature",
       "properties": {
         "id": 231,
-        "departamento": "CASTRO BARROS",
+        "departamento": "castro barros",
         "cabecera": "AMINGA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 6.1,
@@ -6372,7 +6372,7 @@
       "type": "Feature",
       "properties": {
         "id": 232,
-        "departamento": "SANAGASTA",
+        "departamento": "sanagasta",
         "cabecera": "VILLA SANAGASTA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 6.6,
@@ -7350,7 +7350,7 @@
       "type": "Feature",
       "properties": {
         "id": 238,
-        "departamento": "GENERAL OCAMPO",
+        "departamento": "general ocampo",
         "cabecera": "VILLA SANTA RITA DE CATUNA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 7.9,
@@ -7496,7 +7496,7 @@
       "type": "Feature",
       "properties": {
         "id": 233,
-        "departamento": "CHILECITO",
+        "departamento": "chilecito",
         "cabecera": "CHILECITO",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 5.9,
@@ -8902,7 +8902,7 @@
       "type": "Feature",
       "properties": {
         "id": 234,
-        "departamento": "GENERAL ANGEL V. PEÃ‘ALOZA",
+        "departamento": "general angel v. peã‘aloza",
         "cabecera": "TAMA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 6,
@@ -9984,7 +9984,7 @@
       "type": "Feature",
       "properties": {
         "id": 239,
-        "departamento": "GENERAL BELGRANO",
+        "departamento": "general belgrano",
         "cabecera": "OLTA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 5.5,
@@ -10334,7 +10334,7 @@
       "type": "Feature",
       "properties": {
         "id": 240,
-        "departamento": "CHAMICAL",
+        "departamento": "chamical",
         "cabecera": "CHAMICAL",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 6.6,
@@ -10732,7 +10732,7 @@
       "type": "Feature",
       "properties": {
         "id": 235,
-        "departamento": "INDEPENDENCIA",
+        "departamento": "independencia",
         "cabecera": "PATQUIA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 8.3,
@@ -13434,7 +13434,7 @@
       "type": "Feature",
       "properties": {
         "id": 236,
-        "departamento": "GENERAL JUAN F. QUIROGA",
+        "departamento": "general juan f. quiroga",
         "cabecera": "MALANZAN",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 4.4,
@@ -14264,7 +14264,7 @@
       "type": "Feature",
       "properties": {
         "id": 237,
-        "departamento": "ROSARIO VERA PEÃ‘ALOZA",
+        "departamento": "rosario vera peã‘aloza",
         "cabecera": "CHEPES",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 7.9,
@@ -14814,7 +14814,7 @@
       "type": "Feature",
       "properties": {
         "id": 241,
-        "departamento": "GENERAL SAN MARTIN",
+        "departamento": "general san martin",
         "cabecera": "ULAPES",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 5,
@@ -16052,7 +16052,7 @@
       "type": "Feature",
       "properties": {
         "id": 242,
-        "departamento": "VINCHINA",
+        "departamento": "vinchina",
         "cabecera": "VILLA SAN JOSE DE VINCHINA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 6.4,
@@ -27378,7 +27378,7 @@
       "type": "Feature",
       "properties": {
         "id": 243,
-        "departamento": "FAMATINA",
+        "departamento": "famatina",
         "cabecera": "FAMATINA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 6,
@@ -29224,7 +29224,7 @@
       "type": "Feature",
       "properties": {
         "id": 244,
-        "departamento": "SAN BLAS DE LOS SAUCES",
+        "departamento": "san blas de los sauces",
         "cabecera": "SAN BLAS",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 8.6,
@@ -30526,7 +30526,7 @@
       "type": "Feature",
       "properties": {
         "id": 245,
-        "departamento": "ARAUCO",
+        "departamento": "arauco",
         "cabecera": "AIMOGASTA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 5.8,
@@ -31572,7 +31572,7 @@
       "type": "Feature",
       "properties": {
         "id": 300,
-        "departamento": "GENERAL LAMADRID",
+        "departamento": "general lamadrid",
         "cabecera": "VILLA CASTELLI",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 4.3,
@@ -36178,7 +36178,7 @@
       "type": "Feature",
       "properties": {
         "id": 432,
-        "departamento": "CAPITAL",
+        "departamento": "capital",
         "cabecera": "LA RIOJA",
         "provincia": "LA RIOJA",
         "tasa_desempleo": 6,
