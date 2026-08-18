@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import obrasRoutes from './routes/obras.js';
 import authRoutes from './routes/auth.js';
 import importRoutes from './routes/import.js';
+import conveniosMunicRoutes from './routes/conveniosMunic.js';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/obras', obrasRoutes);
 app.use('/api/import', importRoutes);
+app.use('/api/convenios-munic', conveniosMunicRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {
