@@ -74,6 +74,7 @@ export interface ImportRow {
   nombre?: string;
   referente?: string;
   detalle?: string;
+  municipio?: string | null;
   monto_total: number;
   monto_parcial: number;
   saldo: number;
