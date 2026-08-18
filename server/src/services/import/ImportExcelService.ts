@@ -56,6 +56,8 @@ import type { ReportesHistoricoService } from './ReportesHistoricoService.js';
 import type { NameNormalizationService } from './NameNormalizationService.js';
 import { GENERIC_TABLES, PERSON_TABLES } from './types.js';
 import { ExpedienteNormalizationService } from './ExpedienteNormalizationService.js';
+import { extractMunicipio } from '../../utils/ReferenteParser.js';
+import { normalizeMunicipio } from '../../utils/MunicipioNormalizer.js';
 
 // ─── Format / Sheet constants ─────────────────────────────────────────────────
 
@@ -581,6 +583,7 @@ export class ImportExcelService {
       : undefined;
     const nombre     = toStringOrUndefined(get('nombre'));
     const referente  = toStringOrUndefined(get('referente'));
+    const municipio  = normalizeMunicipio(extractMunicipio(referente));
     const detalle    = toStringOrUndefined(get('detalle'));
     const montoTotal = cellToNumber(get('monto_total'));
     const montoParcial = cellToNumber(get('monto_parcial'));
@@ -605,6 +608,7 @@ export class ImportExcelService {
       expediente,
       nombre,
       referente,
+      municipio,
       detalle,
       monto_total:    montoTotal,
       monto_parcial:  montoParcial,
