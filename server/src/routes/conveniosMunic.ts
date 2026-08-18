@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { normalizeMunicipio } from '../utils/MunicipioNormalizer.js';
+import { canonicalMunicipio, getVariantsForCanonical } from '../utils/MunicipioNormalizer.js';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -8,7 +8,8 @@ const prisma = new PrismaClient();
 /**
  * GET /api/convenios-munic?municipio={name}&referente={filter}
  *
- * Returns convenios filtered by municipio (case-insensitive, accent-normalized).
+ * Returns convenios filtered by municipio using canonical matching.
+ * Handles abbreviations, tilde variants, and name differences.
  * Response: { convenios, count, montoTotal, montoParcial, saldo }
  */
 router.get('/', async (req, res) => {
@@ -19,15 +20,18 @@ router.get('/', async (req, res) => {
       return res.status(400).json({ error: 'municipio query parameter is required' });
     }
 
-    const normalizedMunicipio = normalizeMunicipio(municipio);
+    const canonical = canonicalMunicipio(municipio);
+    if (!canonical) {
+      return res.json({ convenios: [], count: 0, montoTotal: 0, montoParcial: 0, saldo: 0 });
+    }
 
-    // Build where clause
-    const where: Record<string, unknown> = {};
+    // Get all normalized variants for this canonical name (e.g. "angel vicente peñaloza" + "general angel v. peñaloza")
+    const matchValues = getVariantsForCanonical(canonical);
 
-    // For case-insensitive + accent-normalized matching, use raw query
-    // Prisma's mode: 'insensitive' handles case but not accent normalization
-    // Since we stored municipio already normalized, we can match directly
-    where.municipio = normalizedMunicipio;
+    // Build where clause — match any variant
+    const where: Record<string, unknown> = {
+      municipio: { in: matchValues },
+    };
 
     if (referente && typeof referente === 'string' && referente.trim() !== '') {
       where.referente = { contains: referente, mode: 'insensitive' };
