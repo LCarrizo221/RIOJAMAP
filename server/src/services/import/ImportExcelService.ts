@@ -33,7 +33,7 @@
  *      bad row never aborts the entire import; calls the version → audit
  *      pipeline (matching is skipped for parse-tagged rows); builds and
  *      returns an ImportResult summary. `opts.nro_expediente`/`opts.fecha_carga`
- *      enable eventual mode (es_eventual tagging + summary counter).
+ *      enable eventual mode (duplicates matching rows into the eventuales table).
  *
  * Dependencies (injected via constructor):
  *   - PrismaClient            (passed through to sub-services)
@@ -300,7 +300,8 @@ export class ImportExcelService {
    *   4. historico.log()  → ALWAYS fires, regardless of outcome.
    *
    * Optional `opts` (eventual mode): rows whose parsed expediente equals nro_expediente
-   * (trim, case-insensitive) persist es_eventual=true; fecha_carga overrides the date.
+   * (trim, case-insensitive) are duplicated into the `eventuales` table via upsert;
+   * fecha_carga overrides the date.
    *
    * One bad row never aborts the import (individual try/catch per row).
    * Rows are processed in CHUNK_SIZE batches for memory efficiency.
@@ -643,9 +644,26 @@ export class ImportExcelService {
       versionResult = outcome.versionResult;
       warnings = outcome.warnings;
 
-      // Eventual counter: only rows actually persisted with es_eventual=true.
+      // Eventual counter: rows where expediente matches the form expediente key.
       if (ctx.es_eventual && versionResult !== null) {
         result.summary.eventual_matched = (result.summary.eventual_matched ?? 0) + 1;
+
+        // Duplicate to eventuales table via upsert (same expediente key).
+        // If the row already matched into eventuales, skip the duplicate.
+        if (versionResult.table_name !== 'eventuales') {
+          try {
+            await this.versioningService.upsertGenericRow(
+              'eventuales',
+              row.expediente!,
+              this._toRowData(row, ctx),
+            );
+          } catch (dupErr) {
+            // Best-effort: log but don't fail the main pipeline
+            result.summary.warnings.push(
+              `Eventual duplicate failed for expediente '${row.expediente}': ${String(dupErr)}`,
+            );
+          }
+        }
       }
 
       // ── Audit log (ALWAYS — for every row, every outcome) ────────────────
@@ -956,7 +974,7 @@ export class ImportExcelService {
   /**
    * Converts an ImportRow into a plain data object suitable for Prisma create/upsert.
    * Excludes `fecha`, `raw`, `table_name` and `person_id` (pipeline-internal fields).
-   * `ctx` carries the effective `fecha_carga` and the `es_eventual` flag to persist.
+   * `ctx` carries the effective `fecha_carga`.
    */
   private _toRowData(row: ImportRow, ctx: RowWriteContext): Record<string, unknown> {
     return {
@@ -968,7 +986,6 @@ export class ImportExcelService {
       monto_parcial: row.monto_parcial,
       saldo:        row.saldo,
       fecha_carga:  ctx.fecha_carga,
-      es_eventual:  ctx.es_eventual,
     };
   }
 }

@@ -9,7 +9,7 @@ import { z } from 'zod';
 // ─── Base Table Row Schema (DRY) ──────────────────────────────────────────────
 
 /**
- * Shared field set for all 14 import tables.
+ * Shared field set for all 15 import tables.
  * Type1 tables re-export this as named aliases.
  * Type2 tables extend it with `person_id`.
  */
@@ -126,7 +126,7 @@ export const importSummarySchema = z.object({
   matched_by_name: z.number(),
   unmatched: z.number(),
   ambiguous: z.number(),
-  /** Rows persisted with es_eventual=true during an eventual import — optional. */
+  /** Rows duplicated to the eventuales table during an eventual import — optional. */
   eventual_matched: z.number().optional(),
   warnings: z.array(z.string()),
 });
@@ -176,17 +176,15 @@ export const tableListQuerySchema = z.object({
   expediente: z.string().optional(),
   nombre: z.string().optional(),
   fecha_carga: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'fecha_carga must be a valid day (YYYY-MM-DD)').optional(),
-  es_eventual: z.enum(['true', 'false']).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
 });
 
-/** GET /api/import/tables/:tableName response (spec: { table_name, data, pagination, eventual_total }). */
+/** GET /api/import/tables/:tableName response. */
 export const tableListResponseSchema = z.object({
   table_name: z.string(),
   data: z.array(z.record(z.unknown())),
   pagination: z.object({ page: z.number(), limit: z.number(), total: z.number(), totalPages: z.number() }),
-  eventual_total: z.number(),
 });
 
 // ─── Manual Row Creation (POST /api/import/tables/:tableName/rows) ─────────────
@@ -194,7 +192,7 @@ export const tableListResponseSchema = z.object({
 /**
  * Body for manual ADMIN row creation: base row fields minus
  * id/version/imported_from/createdAt (server-managed), plus optional
- * `fecha_carga` (defaults to current date) and `es_eventual` (defaults to false).
+ * `fecha_carga` (defaults to current date).
  * `person_id` is required for Type2 tables — enforced in the controller.
  */
 export const createTableRowSchema = z.object({
@@ -206,7 +204,6 @@ export const createTableRowSchema = z.object({
   monto_parcial: z.number().default(0),
   saldo: z.number().default(0),
   fecha_carga: z.coerce.date().optional(),
-  es_eventual: z.boolean().optional(),
   person_id: z.number().optional(),
 });
 

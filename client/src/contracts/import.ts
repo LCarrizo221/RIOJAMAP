@@ -107,9 +107,9 @@ export const VersionHistoryContract = z
 
 // ─── Table Whitelists (mirror of server/src/services/import/types.ts) ─────────
 
-/** 6 generic Type1 tables (expediente @unique — upsert on re-import). */
+/** 7 generic Type1 tables (expediente @unique — upsert on re-import). */
 export const TYPE1_TABLES = [
-  'expedientes', 'conveniosMunic', 'deudasEXPTES', 'instituciones', 'intendentes026', 'diputados',
+  'expedientes', 'conveniosMunic', 'deudasEXPTES', 'instituciones', 'intendentes026', 'diputados', 'eventuales',
 ] as const;
 
 /** 8 person-specific Type2 tables (FK → Person — INSERT a new row each time). */
@@ -120,7 +120,7 @@ export const TYPE2_TABLES = [
 /** ReportesHistorico is a tab but uses its own paginated endpoint. */
 export const REPORTES_HISTORICO = ['reportes-historico'] as const;
 
-/** Full import view list: 14 API tables + the reportes-historico tab. */
+/** Full import view list: 15 API tables + the reportes-historico tab. */
 export const ALL_IMPORT_TABLES = [...TYPE1_TABLES, ...TYPE2_TABLES, ...REPORTES_HISTORICO] as const;
 
 export type Type1TableName = (typeof TYPE1_TABLES)[number];
@@ -133,20 +133,18 @@ export const TableListQueryContract = z.object({
   expediente: z.string().optional(),
   nombre: z.string().optional(),
   fecha_carga: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'fecha_carga must be a valid day (YYYY-MM-DD)').optional(),
-  es_eventual: z.enum(['true', 'false']).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
 }).strict();
 
-/** Mirrors server tableListResponseSchema — includes `eventual_total`. */
+/** Mirrors server tableListResponseSchema. */
 export const TableListResponseContract = z.object({
   table_name: z.string(),
   data: z.array(z.record(z.unknown())),
   pagination: z.object({ page: z.number(), limit: z.number(), total: z.number(), totalPages: z.number() }),
-  eventual_total: z.number(),
 }).strict();
 
-/** Row as persisted in one of the 14 tables (Prisma over JSON); person_id only on Type2. */
+/** Row as persisted in one of the 15 tables (Prisma over JSON); person_id only on Type2. */
 export const TableRowContract = z.object({
   id: z.number(),
   expediente: z.string(),
@@ -159,7 +157,6 @@ export const TableRowContract = z.object({
   version: z.number(),
   imported_from: z.string(),
   fecha_carga: z.string().nullable().optional(),
-  es_eventual: z.boolean(),
   person_id: z.number().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
@@ -180,7 +177,6 @@ export const CreateTableRowContract = z.object({
   monto_parcial: z.number().default(0),
   saldo: z.number().default(0),
   fecha_carga: z.string().optional(),
-  es_eventual: z.boolean().optional(),
   person_id: z.number().optional(),
 }).strict();
 

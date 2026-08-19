@@ -30,10 +30,8 @@ export default function DataTable({ tableName, isAdmin, readonly = false }: Data
   const [page, setPage] = useState(1);
   const pageSize = 20;
   const [total, setTotal] = useState(0);
-  const [eventualTotal, setEventualTotal] = useState(0);
   const [expediente, setExpediente] = useState('');
   const [nombre, setNombre] = useState('');
-  const [soloEventual, setSoloEventual] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,19 +48,16 @@ export default function DataTable({ tableName, isAdmin, readonly = false }: Data
           if (cancelled) return;
           setRows(res.data as unknown as Record<string, unknown>[]);
           setTotal(res.pagination.total);
-          setEventualTotal(0);
         } else {
           const res = await getTableRows(tableName, {
             page,
             limit: pageSize,
             ...(expediente.trim() ? { expediente: expediente.trim() } : {}),
             ...(nombre.trim() ? { nombre: nombre.trim() } : {}),
-            ...(soloEventual ? { es_eventual: 'true' as const } : {}),
           });
           if (cancelled) return;
           setRows(res.data);
           setTotal(res.pagination.total);
-          setEventualTotal(res.eventual_total);
         }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Error al cargar los datos');
@@ -73,7 +68,7 @@ export default function DataTable({ tableName, isAdmin, readonly = false }: Data
     return () => {
       cancelled = true;
     };
-  }, [readonly, tableName, page, pageSize, expediente, nombre, soloEventual, reloadTick]);
+  }, [readonly, tableName, page, pageSize, expediente, nombre, reloadTick]);
 
   /** Columns derived from the first row's keys, minus internal fields. */
   const columns = useMemo(() => {
@@ -86,15 +81,6 @@ export default function DataTable({ tableName, isAdmin, readonly = false }: Data
 
   const renderCell = (key: string, value: unknown) => {
     if (value === null || value === undefined) return '—';
-    if (key === 'es_eventual') {
-      return value === true ? (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] uppercase font-bold tracking-wider border bg-amber-500/10 text-amber-400 border-amber-500/20">
-          EVENTUAL
-        </span>
-      ) : (
-        <span className="text-slate-600">—</span>
-      );
-    }
     if (MONEY_COLUMNS.has(key)) return formatMoney(value);
     if (typeof value === 'object') return JSON.stringify(value);
     if (typeof value === 'boolean') return String(value);
@@ -107,7 +93,7 @@ export default function DataTable({ tableName, isAdmin, readonly = false }: Data
 
   return (
     <div className="bg-[#141417] border border-white/5 rounded-lg overflow-hidden">
-      {/* Toolbar: filters + eventual count + add button */}
+      {/* Toolbar: filters + add button */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-white/10 bg-[#0c0c0e]">
         <div className="flex flex-wrap items-center gap-2">
           {!readonly && (
@@ -130,26 +116,7 @@ export default function DataTable({ tableName, isAdmin, readonly = false }: Data
                 placeholder="Filtrar nombre…"
                 className={filterClass}
               />
-              <label className="flex items-center gap-1.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={soloEventual}
-                  onChange={(e) => {
-                    setSoloEventual(e.target.checked);
-                    setPage(1);
-                  }}
-                  className="accent-amber-500"
-                />
-                <span className="text-[10px] font-mono text-amber-400 uppercase tracking-wider">
-                  Solo eventuales
-                </span>
-              </label>
             </>
-          )}
-          {eventualTotal > 0 && (
-            <span className="text-[10px] font-mono text-amber-400/80 uppercase tracking-wider border border-amber-500/20 rounded-full px-2 py-0.5">
-              EVENTUALES: {eventualTotal}
-            </span>
           )}
         </div>
         {canAdd && (

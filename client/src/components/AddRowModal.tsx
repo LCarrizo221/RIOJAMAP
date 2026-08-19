@@ -40,7 +40,6 @@ export default function AddRowModal({ tableName, isType2, onClose, onCreated }: 
     saldo: '0',
     person_id: '',
     fecha_carga: todayISO(),
-    es_eventual: false,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +65,6 @@ export default function AddRowModal({ tableName, isType2, onClose, onCreated }: 
       monto_parcial: Number(form.monto_parcial) || 0,
       saldo: Number(form.saldo) || 0,
       fecha_carga: form.fecha_carga as string,
-      es_eventual: Boolean(form.es_eventual),
       ...(isType2 ? { person_id: Number(form.person_id) } : {}),
     };
     for (const f of TEXT_FIELDS) {
@@ -161,16 +159,6 @@ export default function AddRowModal({ tableName, isType2, onClose, onCreated }: 
               />
             </label>
           </div>
-
-          <label className="flex items-center gap-2 cursor-pointer w-fit">
-            <input
-              type="checkbox"
-              checked={Boolean(form.es_eventual)}
-              onChange={(e) => setField('es_eventual', e.target.checked)}
-              className="accent-amber-500"
-            />
-            <span className="text-xs font-mono text-slate-300 uppercase tracking-wider">Eventual</span>
-          </label>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 rounded px-4 py-3">

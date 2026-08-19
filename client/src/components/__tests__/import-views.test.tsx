@@ -38,11 +38,9 @@ const listResponse = {
       monto_total: 1000,
       monto_parcial: 0,
       saldo: 1000,
-      es_eventual: true,
     },
   ],
   pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
-  eventual_total: 1,
 };
 
 const emptyHistorico = {
@@ -68,12 +66,6 @@ describe('DataTable — ADMIN/USER role gate', () => {
 
     await screen.findByText('EXP-42');
     expect(screen.queryByRole('button', { name: /agregar fila/i })).not.toBeInTheDocument();
-  });
-
-  it('renders the EVENTUAL badge for eventual rows', async () => {
-    render(<DataTable tableName="expedientes" isAdmin={false} />);
-
-    expect(await screen.findByText('EVENTUAL')).toBeInTheDocument();
   });
 });
 

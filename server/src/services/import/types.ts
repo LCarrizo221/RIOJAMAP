@@ -14,7 +14,8 @@ export type GenericTableName =
   | 'deudasEXPTES'
   | 'instituciones'
   | 'intendentes026'
-  | 'diputados';
+  | 'diputados'
+  | 'eventuales';
 
 export type PersonTableName =
   | 'piniHerrera'
@@ -26,7 +27,7 @@ export type PersonTableName =
   | 'romina'
   | 'misael';
 
-/** All 6 generic Type1 table names in search-priority order. */
+/** All 7 generic Type1 table names in search-priority order. */
 export const GENERIC_TABLES: GenericTableName[] = [
   'expedientes',
   'conveniosMunic',
@@ -34,6 +35,7 @@ export const GENERIC_TABLES: GenericTableName[] = [
   'instituciones',
   'intendentes026',
   'diputados',
+  'eventuales',
 ];
 
 /** All 8 person-specific Type2 table names. */
@@ -120,8 +122,8 @@ export interface VersionedRowResult {
 
 /**
  * Optional mode for importFile: when `nro_expediente` is present, rows whose
- * parsed `expediente` equals it (trimmed, case-insensitive) persist with
- * `es_eventual=true`; all others persist `es_eventual=false`.
+ * parsed `expediente` equals it (trimmed, case-insensitive) are duplicated
+ * into the `eventuales` table via upsert.
  * `fecha_carga` overrides the effective load date (defaults to importDate).
  */
 export interface ImportFileOptions {
@@ -137,7 +139,7 @@ export interface ImportSummary {
   matched_by_name: number;
   unmatched: number;
   ambiguous: number;
-  /** Rows tagged es_eventual=true during an eventual import (nro_expediente mode). */
+  /** Rows duplicated to eventuales table during an eventual import. */
   eventual_matched?: number;
   warnings: string[];
 }

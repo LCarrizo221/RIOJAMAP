@@ -1,9 +1,9 @@
 /**
- * Read-only listing for the 14 import tables (GET /api/import/tables/:tableName).
+ * Read-only listing for the 15 import tables (GET /api/import/tables/:tableName).
  * Table names resolve ONLY through the GENERIC_TABLES ∪ PERSON_TABLES whitelist
  * (anything else throws InvalidTableError → 400 INVALID_TABLE), never interpolated
  * into raw SQL. Rows are ordered by id desc, filtered by expediente/nombre
- * (case-insensitive), es_eventual and fecha_carga (ISO day → [startOfDay, endOfDay]),
+ * (case-insensitive) and fecha_carga (ISO day → [startOfDay, endOfDay]),
  * with page/limit pagination (totalPages = ceil(total / limit)).
  */
 
@@ -26,7 +26,6 @@ export interface TableListQuery {
   expediente?: string;
   nombre?: string;
   fecha_carga?: string; // ISO day (YYYY-MM-DD) → expanded to [startOfDay, endOfDay]
-  es_eventual?: 'true' | 'false';
   page: number;
   limit: number;
 }
@@ -80,14 +79,6 @@ export class TableQueryService {
     };
   }
 
-  /** Total rows with es_eventual=true in a whitelisted table; throws InvalidTableError when not whitelisted. */
-  async countEventual(tableName: string): Promise<number> {
-    this.assertValidTable(tableName);
-
-    const table = (this.prisma as any)[tableName];
-    return table.count({ where: { es_eventual: true } });
-  }
-
   private assertValidTable(tableName: string): void {
     if (!this.isValidTable(tableName)) {
       throw new InvalidTableError(tableName);
@@ -102,9 +93,6 @@ export class TableQueryService {
     }
     if (q.nombre !== undefined && q.nombre !== '') {
       where.nombre = { contains: q.nombre, mode: 'insensitive' };
-    }
-    if (q.es_eventual !== undefined) {
-      where.es_eventual = q.es_eventual === 'true';
     }
     if (q.fecha_carga !== undefined && q.fecha_carga !== '') {
       // Parse the day parts locally so the range is timezone-stable.

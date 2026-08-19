@@ -249,13 +249,10 @@ export const listTableRows = async (req: Request, res: Response): Promise<void> 
   try {
     const prisma = new PrismaClient();
     const tableQueryService = new TableQueryService(prisma);
-    const [listResult, eventualTotal] = await Promise.all([
-      tableQueryService.list(tableName, parsed.data),
-      tableQueryService.countEventual(tableName),
-    ]);
+    const listResult = await tableQueryService.list(tableName, parsed.data);
     await prisma.$disconnect();
 
-    res.status(200).json({ table_name: tableName, ...listResult, eventual_total: eventualTotal });
+    res.status(200).json({ table_name: tableName, ...listResult });
   } catch (err) {
     if (err instanceof InvalidTableError) {
       res.status(400).json({ error: err.message, code: 'INVALID_TABLE' });
@@ -333,7 +330,6 @@ export const createTableRow = async (req: Request, res: Response): Promise<void>
         monto_parcial: body.monto_parcial,
         saldo:         body.saldo,
         fecha_carga:   fechaCarga,
-        es_eventual:   body.es_eventual ?? false,
       };
       if (isType2) {
         rowData.person_id = body.person_id;
