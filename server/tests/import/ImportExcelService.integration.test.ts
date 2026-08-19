@@ -23,7 +23,7 @@ describe('ImportExcelService _processRow branches', () => {
   const importDate = new Date('2023-01-01');
   const sourceFile = 'test.xlsx';
   // Per-row write context normally computed by importFile (eventual mode).
-  const writeCtx = { fecha_carga: importDate, es_eventual: false };
+  const writeCtx = { fecha_carga: importDate };
 
   const baseResult: ImportResult = {
     success: true,

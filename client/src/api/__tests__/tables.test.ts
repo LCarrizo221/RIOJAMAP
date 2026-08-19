@@ -11,7 +11,6 @@ const listResponse = {
   table_name: 'expedientes',
   data: [{ id: 1, expediente: 'EXP-42' }],
   pagination: { page: 2, limit: 50, total: 120, totalPages: 3 },
-  eventual_total: 7,
 };
 
 const createdRow = {
@@ -24,7 +23,6 @@ const createdRow = {
   imported_from: 'MANUAL',
   person_id: 3,
   fecha_carga: '2026-08-14T00:00:00.000Z',
-  es_eventual: false,
 };
 
 describe('getTableRows', () => {
@@ -39,7 +37,6 @@ describe('getTableRows', () => {
       credentials: 'include',
     });
     expect(() => TableListResponseContract.parse(result)).not.toThrow();
-    expect(result.eventual_total).toBe(7);
   });
 
   it('maps a 400 INVALID_TABLE response to a usable message', async () => {

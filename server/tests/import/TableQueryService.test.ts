@@ -25,16 +25,6 @@ describe('TableQueryService.list', () => {
     });
   });
 
-  test('filters es_eventual=true rows', async () => {
-    const { service, findMany } = makeService('piniHerrera');
-
-    await service.list('piniHerrera', { page: 1, limit: 50, es_eventual: 'true' });
-
-    expect(findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: expect.objectContaining({ es_eventual: true }) }),
-    );
-  });
-
   test('expands fecha_carga day into a [startOfDay, endOfDay] range', async () => {
     const { service, findMany } = makeService('expedientes');
 
@@ -63,16 +53,5 @@ describe('TableQueryService.list', () => {
     await expect(service.list('hackers', { page: 1, limit: 50 })).rejects.toBeInstanceOf(
       InvalidTableError,
     );
-  });
-});
-
-describe('TableQueryService.countEventual', () => {
-  test('counts rows with es_eventual=true', async () => {
-    const { service, countMock } = makeService('expedientes', [], 7);
-
-    const total = await service.countEventual('expedientes');
-
-    expect(total).toBe(7);
-    expect(countMock).toHaveBeenCalledWith({ where: { es_eventual: true } });
   });
 });

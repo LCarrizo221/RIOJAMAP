@@ -16,8 +16,8 @@ jest.mock('@prisma/client', () => {
       expedientes: {
         count: jest.fn().mockResolvedValue(2),
         findMany: jest.fn().mockResolvedValue([
-          { id: 2, expediente: 'EXP-42', es_eventual: true },
-          { id: 1, expediente: 'EXP-1', es_eventual: false },
+          { id: 2, expediente: 'EXP-42' },
+          { id: 1, expediente: 'EXP-1' },
         ]),
         findUnique: jest.fn().mockImplementation(({ where }: any) =>
           where?.expediente === 'EXP-42' ? { id: 1, expediente: 'EXP-42' } : null,
@@ -170,7 +170,7 @@ describe('GET /api/import/tables/:tableName', () => {
       .set('Cookie', `riojamap_token=${token}`);
     expect(res.status).toBe(200);
     expect(() => tableListResponseSchema.parse(res.body)).not.toThrow();
-    expect(res.body).toMatchObject({ table_name: 'expedientes', eventual_total: 2 });
+    expect(res.body).toMatchObject({ table_name: 'expedientes' });
     expect(res.body.pagination).toMatchObject({ page: 1, limit: 50, total: 2, totalPages: 1 });
   });
 });
@@ -227,26 +227,6 @@ describe('Write paths — ADMIN gates & manual row creation (slice 2)', () => {
       id: 10,
       expediente: 'P-1',
       version: 1,
-      es_eventual: false,
-      imported_from: 'MANUAL',
-      person_id: 3,
-    });
-    expect(res.body.fecha_carga).toEqual(expect.any(String));
-    const prismaMock = jest.requireMock('@prisma/client').PrismaClient as jest.Mock;
-    const instance = prismaMock.mock.results[prismaMock.mock.results.length - 1].value;
-    expect(instance.reportesHistorico.create).toHaveBeenCalledTimes(1);
-  });
-  it('Type2 manual eventual create persists es_eventual=true and fecha_carga', async () => {
-    const res = await request(app)
-      .post('/api/import/tables/piniHerrera/rows')
-      .set('Cookie', authCookie())
-      .send({ expediente: 'P-2', monto_total: 200, person_id: 3, es_eventual: true });
-    expect(res.status).toBe(201);
-    expect(res.body).toMatchObject({
-      id: 10,
-      expediente: 'P-2',
-      version: 1,
-      es_eventual: true,
       imported_from: 'MANUAL',
       person_id: 3,
     });

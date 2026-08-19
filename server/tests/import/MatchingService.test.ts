@@ -17,7 +17,7 @@ function createPrismaMock(tableRows: Record<string, any[]>) {
 
 describe('MatchingService private methods', () => {
   test('_matchByExpediente single Type1 hit', async () => {
-    const rows = { expedientes: [{ id: 1, version: 1 }], conveniosMunic: [], deudasEXPTES: [], instituciones: [], intendentes026: [], diputados: [] };
+    const rows = { expedientes: [{ id: 1, version: 1 }], conveniosMunic: [], deudasEXPTES: [], instituciones: [], intendentes026: [], diputados: [], eventuales: [] };
     const prisma = createPrismaMock(rows);
     const service = new MatchingService(prisma as any, mockNameService);
     const result = await (service as any)._matchByExpediente('EXP1');
@@ -25,7 +25,7 @@ describe('MatchingService private methods', () => {
   });
 
   test('_matchByExpediente ambiguous Type1', async () => {
-    const rows = { expedientes: [{ id: 1, version: 1 }], conveniosMunic: [{ id: 2, version: 1 }], deudasEXPTES: [], instituciones: [], intendentes026: [], diputados: [] };
+    const rows = { expedientes: [{ id: 1, version: 1 }], conveniosMunic: [{ id: 2, version: 1 }], deudasEXPTES: [], instituciones: [], intendentes026: [], diputados: [], eventuales: [] };
     const prisma = createPrismaMock(rows);
     const service = new MatchingService(prisma as any, mockNameService);
     const result = await (service as any)._matchByExpediente('EXP2');
@@ -34,7 +34,7 @@ describe('MatchingService private methods', () => {
   });
 
   test('_matchByExpediente falls back to Type2', async () => {
-    const rows = { expedientes: [], conveniosMunic: [], deudasEXPTES: [], instituciones: [], intendentes026: [], diputados: [], piniHerrera: [{ id: 5, version: 1 }], gabiPedrali: [], teresitaMadera: [], florenciaLopez: [], guryCaceres: [], dirigentes: [], romina: [], misael: [] };
+    const rows = { expedientes: [], conveniosMunic: [], deudasEXPTES: [], instituciones: [], intendentes026: [], diputados: [], eventuales: [], piniHerrera: [{ id: 5, version: 1 }], gabiPedrali: [], teresitaMadera: [], florenciaLopez: [], guryCaceres: [], dirigentes: [], romina: [], misael: [] };
     const prisma = createPrismaMock(rows);
     const service = new MatchingService(prisma as any, mockNameService);
     const result = await (service as any)._matchByExpediente('EXP3');

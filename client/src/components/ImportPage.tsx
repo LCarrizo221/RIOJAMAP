@@ -4,8 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import { postImport } from '../api/import.js';
 import type { ImportResponse } from '../contracts/import.js';
 import TableBrowser from './TableBrowser.js';
+import EventualesForm from './EventualesForm.js';
 
-type Tab = 'cargar' | 'tablas';
+type Tab = 'cargar' | 'eventuales' | 'tablas';
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
 const TAB_CLASSES = (active: boolean) =>
@@ -105,6 +106,9 @@ export function ImportPage() {
           <button onClick={() => setTab('cargar')} className={TAB_CLASSES(tab === 'cargar')}>
             Cargar
           </button>
+          <button onClick={() => setTab('eventuales')} className={TAB_CLASSES(tab === 'eventuales')}>
+            Eventuales
+          </button>
           <button onClick={() => setTab('tablas')} className={TAB_CLASSES(tab === 'tablas')}>
             Ver tablas
           </button>
@@ -130,6 +134,18 @@ export function ImportPage() {
             <section className="bg-[#0c0c0e] rounded-lg border border-white/10 p-6 lg:p-8">
               <p className="text-sm font-mono text-slate-400">
                 Solo los administradores pueden cargar archivos.
+              </p>
+            </section>
+          )
+        )}
+
+        {tab === 'eventuales' && (
+          isAdmin ? (
+            <EventualesForm />
+          ) : (
+            <section className="bg-[#0c0c0e] rounded-lg border border-white/10 p-6 lg:p-8">
+              <p className="text-sm font-mono text-slate-400">
+                Solo los administradores pueden cargar eventuales.
               </p>
             </section>
           )

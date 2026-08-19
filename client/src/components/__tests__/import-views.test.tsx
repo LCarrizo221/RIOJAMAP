@@ -91,7 +91,8 @@ describe('ImportPage — tabs', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Ver tablas' }));
 
-    expect(await screen.findByRole('button', { name: 'expedientes' })).toBeInTheDocument();
+    // expedientes is inside the collapsed "Resto de Tablas" section — use an always-visible table instead
+    expect(await screen.findByRole('button', { name: 'conveniosMunic' })).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: /agregar fila/i })).toBeInTheDocument();
   });
 
