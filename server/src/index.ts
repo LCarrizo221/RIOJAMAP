@@ -11,7 +11,7 @@ import eventualesRoutes from './routes/eventuales.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3003;
+const PORT = Number(process.env.PORT) || 3003;
 
 // Allowed origins: env override via CORS_ORIGINS (comma-separated) or defaults for dev/tunnels
 const envOrigins = process.env.CORS_ORIGINS

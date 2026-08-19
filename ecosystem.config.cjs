@@ -1,5 +1,5 @@
 // ecosystem.config.js — configuración de PM2 para producción
-// Uso: pm2 start ecosystem.config.js
+// Uso: pm2 start ecosystem.config.js --env production
 module.exports = {
   apps: [
     {

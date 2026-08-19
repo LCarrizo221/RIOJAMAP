@@ -9,7 +9,7 @@ SSH_PORT="5008"
 SSH_USER="root"
 SSH_PASS="58%ExY1w0y.nry"
 VPS_PATH="/var/www/RIOJAMAP"
-LOCAL_PATH="/home/lucas/docs/Code/RIOJAMAP"
+LOCAL_PATH="$(cd "$(dirname "$0")" && pwd)"
 PM2_NAME="riojamap-backend"
 BACKEND_PORT="3003"
 
@@ -28,20 +28,16 @@ deploy_frontend() {
 }
 
 deploy_backend() {
-  echo "→ Commit local (si hay cambios)..."
-  cd "$LOCAL_PATH"
-  if ! git diff --quiet HEAD; then
-    git add -A
-    git commit -m "chore: deploy $(date +%Y-%m-%d_%H:%M)"
-    git push
-  fi
-
-  echo "→ Pull + build + restart en VPS..."
+  echo "→ Pull + prisma generate + db push + build + restart en VPS..."
   sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no \
     -p"$SSH_PORT" "$SSH_USER@$SSH_HOST" "
     cd $VPS_PATH
     git pull
-    cd server && npm run build
+    cd server
+    npm install --omit=dev
+    npx prisma generate
+    npx prisma db push --accept-data-loss --skip-generate
+    npm run build
     pm2 restart $PM2_NAME
   "
 
