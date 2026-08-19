@@ -6,12 +6,18 @@ import obrasRoutes from './routes/obras.js';
 import authRoutes from './routes/auth.js';
 import importRoutes from './routes/import.js';
 import conveniosMunicRoutes from './routes/conveniosMunic.js';
+import eventualesRoutes from './routes/eventuales.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3003;
-const allowedOrigins = [
+
+// Allowed origins: env override via CORS_ORIGINS (comma-separated) or defaults for dev/tunnels
+const envOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((o: string) => o.trim())
+  : [];
+const allowedOrigins = envOrigins.length > 0 ? envOrigins : [
   'http://localhost:5173',
   'https://localhost:5173',
   'http://localhost:3000',
@@ -42,6 +48,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/obras', obrasRoutes);
 app.use('/api/import', importRoutes);
 app.use('/api/convenios-munic', conveniosMunicRoutes);
+app.use('/api/eventuales', eventualesRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {

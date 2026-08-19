@@ -45,7 +45,7 @@ function MapApp() {
         <div className="flex items-center gap-4">
           <Link
             to="/import"
-            className="border border-gov-gold/50 px-4 py-2 text-xs font-mono uppercase tracking-wider text-gov-gold-light transition-colors hover:border-gov-gold-light hover:bg-gov-gold/10 hover:text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0e]"
+            className="border border-gov-gold/50 px-4 py-2 text-xs font-mono uppercase tracking-wider text-gov-gold-light transition-colors hover:border-gov-gold-light hover:bg-gov-gold/10 hover:text-gov-gold-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0e]"
           >
             Importar datos
           </Link>

@@ -50,7 +50,7 @@ export default function ConveniosDashboard({ municipio }: ConveniosDashboardProp
 
   if (loading) {
     return (
-      <div className="bg-[#141417] border border-white/5 rounded-lg p-8 text-center">
+      <div className="bg-gov-navy/10 border border-gov-navy/20 rounded-lg p-8 text-center">
         <p className="text-slate-400 text-sm">Cargando convenios...</p>
       </div>
     );
@@ -73,7 +73,7 @@ export default function ConveniosDashboard({ municipio }: ConveniosDashboardProp
           <KpiCard label="Ejecutado" value={0} />
           <KpiCard label="Pendiente" value={0} />
         </div>
-        <div className="bg-[#141417] border border-white/5 rounded-lg p-8 text-center">
+        <div className="bg-gov-navy/10 border border-gov-navy/20 rounded-lg p-8 text-center">
           <p className="text-slate-400 text-sm">Sin convenios en {municipio}</p>
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function ConveniosDashboard({ municipio }: ConveniosDashboardProp
       )}
 
       {/* Convenios Table */}
-      <div className="bg-[#141417] border border-white/5 rounded-lg overflow-hidden">
+      <div className="bg-gov-navy/10 border border-gov-navy/20 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-[#0c0c0e] border-b border-white/10">
@@ -172,7 +172,7 @@ export default function ConveniosDashboard({ municipio }: ConveniosDashboardProp
 
 function KpiCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-[#141417] border border-white/5 rounded-lg p-3">
+    <div className="bg-gov-navy/20 border border-gov-navy/30 rounded-lg p-3">
       <p className="text-[9px] text-slate-500 uppercase tracking-wider font-bold mb-1">{label}</p>
       <p className="text-lg font-mono text-white">{formatCurrency(value)}</p>
     </div>

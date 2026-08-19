@@ -13,7 +13,7 @@ interface DashboardProps {
 export default function Dashboard({ department, onClose }: DashboardProps) {
   return (
     <aside className="w-full lg:w-1/2 xl:w-[600px] border-t lg:border-t-0 lg:border-l border-white/5 bg-[#0c0c0e] flex flex-col overflow-y-auto shrink-0 relative z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
-      <div className="sticky top-0 bg-[#0c0c0e]/95 backdrop-blur-sm border-b border-white/10 p-4 lg:p-6 flex justify-between items-start z-20">
+      <div className="sticky top-0 bg-gov-navy/30 backdrop-blur-sm border-b border-gov-navy/40 p-4 lg:p-6 flex justify-between items-start z-20">
         <div>
           <h2 className="text-xs font-mono text-gov-gold uppercase tracking-widest mb-1">Análisis Detallado</h2>
           <p className="text-2xl lg:text-3xl font-serif italic text-white leading-tight">

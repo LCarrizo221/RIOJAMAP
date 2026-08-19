@@ -219,7 +219,7 @@ export default function InteractiveMap({ onHover, onClick, selectedDept }: MapPr
       {/* Map Legend */}
       <div className="absolute bottom-4 left-4 flex flex-col gap-2 z-[400] bg-[#0c0c0e]/80 p-3 rounded border border-white/10 backdrop-blur-md shadow-xl pointer-events-none">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-gov-gold/35 border-2 border-amber-300"></div>
+          <div className="w-3 h-3 bg-gov-gold/35 border-2 border-gov-gold-light"></div>
           <span className="text-[10px] text-slate-200 uppercase tracking-widest font-mono">Seleccionado</span>
         </div>
         <div className="flex items-center gap-2">

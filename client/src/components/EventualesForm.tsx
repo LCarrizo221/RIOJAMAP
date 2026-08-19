@@ -71,6 +71,7 @@ export default function EventualesForm({ onCreated }: { onCreated?: () => void }
       const res = await fetch('/api/eventuales', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(payload),
       });
 

@@ -46,11 +46,11 @@ export default function Sidebar({ department, obrasCount, montoTotal }: SidebarP
 
             {/* Obra-related info */}
             <div className="grid grid-cols-1 gap-4">
-              <div className="bg-[#141417] p-4 border border-white/5 rounded-sm">
+              <div className="bg-gov-navy/20 p-4 border border-gov-navy/30 rounded-sm">
                 <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Total Obras</p>
                 <p className="text-xl lg:text-2xl font-mono text-slate-100">{obrasCount ?? 0}</p>
               </div>
-              <div className="bg-[#141417] p-4 border border-white/5 rounded-sm">
+              <div className="bg-gov-navy/20 p-4 border border-gov-navy/30 rounded-sm">
                 <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Monto Total</p>
                 <p className="text-xl lg:text-2xl font-mono text-gov-gold-light">
                   {montoTotal ? formatCurrency(montoTotal) : '$ 0'}

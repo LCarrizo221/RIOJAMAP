@@ -12,7 +12,7 @@ type Status = 'idle' | 'loading' | 'success' | 'error';
 const TAB_CLASSES = (active: boolean) =>
   `px-4 py-2 text-xs font-mono uppercase tracking-wider rounded-t-lg border-b-2 transition-colors ${
     active
-      ? 'text-gov-gold-light border-gov-gold bg-gov-gold/gov-gold/5'
+      ? 'text-gov-gold-light border-gov-gold bg-gov-gold/10'
       : 'text-slate-400 border-transparent hover:text-slate-200'
   }`;
 
