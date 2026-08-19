@@ -56,6 +56,39 @@ describe('Client Import API tests', () => {
     expect(fetchMock).toHaveBeenCalled();
   });
 
+  it('postImport sends nro_expediente/fecha_carga and validates eventual_matched', async () => {
+    const mockResponse = {
+      success: true,
+      summary: {
+        total_rows: 1,
+        matched_by_expediente: 1,
+        matched_by_name: 0,
+        unmatched: 0,
+        ambiguous: 0,
+        eventual_matched: 3,
+        warnings: []
+      },
+      updated_rows: []
+    };
+    const fetchMock = vi.spyOn(window, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => mockResponse
+    } as any);
+
+    const file = createExcelFile();
+    const result = await postImport(file, {
+      nro_expediente: ' EXP-42 ',
+      fecha_carga: '2026-08-14'
+    });
+
+    const [, init] = fetchMock.mock.calls[0];
+    const form = init.body as FormData;
+    expect(form.get('nro_expediente')).toBe(' EXP-42 ');
+    expect(form.get('fecha_carga')).toBe('2026-08-14');
+    expect(result.summary.eventual_matched).toBe(3);
+    expect(() => ImportResponseContract.parse(result)).not.toThrow();
+  });
+
   it('getPersonVersions builds correct URL and validates response', async () => {
     const mockData = {
       person_id: 5,

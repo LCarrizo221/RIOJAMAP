@@ -147,7 +147,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
               {/* Header */}
               <div className="sticky top-0 bg-[#0c0c0e]/95 backdrop-blur-sm border-b border-white/10 p-4 lg:p-6 flex justify-between items-center z-10">
                 <div>
-                  <h2 className="text-xs font-mono text-amber-500 uppercase tracking-widest mb-1">
+                  <h2 className="text-xs font-mono text-gov-gold uppercase tracking-widest mb-1">
                     {obra ? 'Editar Obra' : 'Nueva Obra'}
                   </h2>
                   <p className="text-xl font-serif italic text-white">
@@ -180,7 +180,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
                       type="date"
                       value={formData.fecha}
                       onChange={(e) => handleChange('fecha', e.target.value)}
-                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50"
                       required
                     />
                     {errors.fecha && <p className="text-red-400 text-xs mt-1">{errors.fecha}</p>}
@@ -196,7 +196,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
                       value={formData.municipio}
                       onChange={(e) => handleChange('municipio', e.target.value)}
                       disabled={!!municipio}
-                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50 disabled:opacity-50"
+                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50 disabled:opacity-50"
                       required
                     />
                     {errors.municipio && <p className="text-red-400 text-xs mt-1">{errors.municipio}</p>}
@@ -211,7 +211,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
                       type="text"
                       value={formData.referente}
                       onChange={(e) => handleChange('referente', e.target.value)}
-                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50"
                       required
                     />
                     {errors.referente && <p className="text-red-400 text-xs mt-1">{errors.referente}</p>}
@@ -225,7 +225,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
                     <select
                       value={formData.tipo}
                       onChange={(e) => handleChange('tipo', e.target.value)}
-                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50"
                       required
                     >
                       {TIPOS_OBRA.map(tipo => (
@@ -243,7 +243,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
                     <select
                       value={formData.estado}
                       onChange={(e) => handleChange('estado', e.target.value)}
-                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50"
                       required
                     >
                       {ESTADOS_OBRA.map(estado => (
@@ -262,7 +262,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
                       type="text"
                       value={formData.concepto}
                       onChange={(e) => handleChange('concepto', e.target.value)}
-                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50"
                       required
                     />
                     {errors.concepto && <p className="text-red-400 text-xs mt-1">{errors.concepto}</p>}
@@ -277,7 +277,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
                       type="number"
                       value={formData.montoTotal}
                       onChange={(e) => handleChange('montoTotal', parseFloat(e.target.value) || 0)}
-                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50"
                       required
                       min="0"
                     />
@@ -293,7 +293,7 @@ export default function ObraModal({ isOpen, onClose, obra, onSave, municipio, is
                       type="number"
                       value={formData.montoParcial}
                       onChange={(e) => handleChange('montoParcial', parseFloat(e.target.value) || 0)}
-                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50"
                       required
                       min="0"
                     />

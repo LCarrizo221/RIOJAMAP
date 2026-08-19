@@ -3,9 +3,11 @@ import { createRoot } from 'react-dom/client';
 import App from './App.js';
 import './index.css';
 
-// Start MSW worker in development mode only
+// Start MSW worker only when explicitly enabled (VITE_USE_MSW=true).
+// Default dev runs against the real backend so auth cookies and import
+// tables work end-to-end.
 async function enableMocking() {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV && import.meta.env.VITE_USE_MSW === 'true') {
     const { worker } = await import('./mocks/browser.js');
     return worker.start({
       onUnhandledRequest: (req) => {

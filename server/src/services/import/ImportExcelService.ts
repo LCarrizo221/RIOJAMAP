@@ -28,11 +28,12 @@
  *         detected as the first row with ≥ 2 non-empty cells; columns mapped
  *         case/alias-insensitively. Preserved for backward compatibility.
  *
- *   2. importFile(buffer, importDate, sourceFileName) — processes rows in
+ *   2. importFile(buffer, importDate, sourceFileName, opts?) — processes rows in
  *      chunks of 100; for each row individually wrapped in try/catch so one
  *      bad row never aborts the entire import; calls the version → audit
  *      pipeline (matching is skipped for parse-tagged rows); builds and
- *      returns an ImportResult summary.
+ *      returns an ImportResult summary. `opts.nro_expediente`/`opts.fecha_carga`
+ *      enable eventual mode (duplicates matching rows into the eventuales table).
  *
  * Dependencies (injected via constructor):
  *   - PrismaClient            (passed through to sub-services)
@@ -48,12 +49,15 @@
 
 import ExcelJS from 'exceljs';
 import type { PrismaClient } from '@prisma/client';
-import type { ImportRow, ImportResult, TableType, VersionedRowResult } from './types.js';
+import type { ImportRow, ImportResult, TableType, VersionedRowResult, ImportFileOptions } from './types.js';
 import type { MatchingService } from './MatchingService.js';
 import type { VersioningService } from './VersioningService.js';
 import type { ReportesHistoricoService } from './ReportesHistoricoService.js';
 import type { NameNormalizationService } from './NameNormalizationService.js';
 import { GENERIC_TABLES, PERSON_TABLES } from './types.js';
+import { ExpedienteNormalizationService } from './ExpedienteNormalizationService.js';
+import { extractMunicipio } from '../../utils/ReferenteParser.js';
+import { normalizeMunicipio } from '../../utils/MunicipioNormalizer.js';
 
 // ─── Format / Sheet constants ─────────────────────────────────────────────────
 
@@ -229,12 +233,20 @@ interface ParseResult {
   warnings: string[];
 }
 
+/** Per-row write context (eventual mode) threaded through to _toRowData. */
+interface RowWriteContext {
+  fecha_carga: Date;
+  es_eventual: boolean;
+}
+
 export class ImportExcelService {
   /** Person registry cache: table_name_alias → id. Filled lazily on first Type2 sheet. */
   private personIdCache: Map<string, number> | null = null;
 
   /** Monotonic counter for last-resort synthetic expediente keys. */
   private fallbackKeyCounter = 0;
+
+  private readonly expedienteNormalizer = new ExpedienteNormalizationService();
 
   constructor(
     private readonly prisma: PrismaClient,
@@ -287,6 +299,10 @@ export class ImportExcelService {
    *   3. version()        → create or upsert DB row when written.
    *   4. historico.log()  → ALWAYS fires, regardless of outcome.
    *
+   * Optional `opts` (eventual mode): rows whose parsed expediente equals nro_expediente
+   * (trim, case-insensitive) are duplicated into the `eventuales` table via upsert;
+   * fecha_carga overrides the date.
+   *
    * One bad row never aborts the import (individual try/catch per row).
    * Rows are processed in CHUNK_SIZE batches for memory efficiency.
    */
@@ -294,8 +310,23 @@ export class ImportExcelService {
     buffer: Buffer,
     importDate: Date,
     sourceFileName: string,
+    opts?: ImportFileOptions,
   ): Promise<ImportResult> {
     const { rows, warnings } = await this.parseFile(buffer);
+
+    // Normalized eventual key: only non-empty nro_expediente enables eventual mode.
+    // The form expediente is normalized to canonical form ONCE: lowercased for the
+    // eventual-key comparison, and canonical (preserved case) reused as a fallback
+    // expediente when a parsed row carries none (e.g. positional informe diario,
+    // which has no expediente column in the source file).
+    const formExpedienteCanonical =
+      opts?.nro_expediente !== undefined && opts.nro_expediente.trim() !== ''
+        ? (this.expedienteNormalizer.normalize(opts.nro_expediente.trim()) ??
+          opts.nro_expediente.trim())
+        : undefined;
+    const eventualKey = formExpedienteCanonical
+      ? formExpedienteCanonical.toLowerCase()
+      : undefined;
 
     const result: ImportResult = {
       success: true,
@@ -305,18 +336,33 @@ export class ImportExcelService {
         matched_by_name:         0,
         unmatched:               0,
         ambiguous:               0,
+        ...(eventualKey !== undefined ? { eventual_matched: 0 } : {}),
         warnings:                [...warnings],
       },
       updated_rows: [],
       errors:       [],
     };
 
+    // Spec decision: effective fecha_carga = opts.fecha_carga ?? importDate.
+    const effectiveFechaCarga = opts?.fecha_carga ?? importDate;
+
     // Process in chunks of CHUNK_SIZE
     for (let chunkStart = 0; chunkStart < rows.length; chunkStart += CHUNK_SIZE) {
       const chunk = rows.slice(chunkStart, chunkStart + CHUNK_SIZE);
 
       for (const row of chunk) {
-        await this._processRow(row, importDate, sourceFileName, result);
+        const esEventual =
+          eventualKey !== undefined &&
+          row.expediente !== undefined &&
+          row.expediente.trim().toLowerCase() === eventualKey;
+      await this._processRow(
+        row,
+        importDate,
+        sourceFileName,
+        result,
+        { fecha_carga: effectiveFechaCarga, es_eventual: esEventual },
+        formExpedienteCanonical,
+      );
       }
     }
 
@@ -532,9 +578,13 @@ export class ImportExcelService {
       return idx !== undefined ? values[idx] : undefined;
     };
 
-    const expediente = toStringOrUndefined(get('expediente'));
+    const rawExpediente = toStringOrUndefined(get('expediente'));
+    const expediente = rawExpediente
+      ? (this.expedienteNormalizer.normalize(rawExpediente) ?? undefined)
+      : undefined;
     const nombre     = toStringOrUndefined(get('nombre'));
     const referente  = toStringOrUndefined(get('referente'));
+    const municipio  = normalizeMunicipio(extractMunicipio(referente));
     const detalle    = toStringOrUndefined(get('detalle'));
     const montoTotal = cellToNumber(get('monto_total'));
     const montoParcial = cellToNumber(get('monto_parcial'));
@@ -559,6 +609,7 @@ export class ImportExcelService {
       expediente,
       nombre,
       referente,
+      municipio,
       detalle,
       monto_total:    montoTotal,
       monto_parcial:  montoParcial,
@@ -579,21 +630,45 @@ export class ImportExcelService {
     importDate: Date,
     sourceFileName: string,
     result: ImportResult,
+    ctx: RowWriteContext,
+    formExpediente?: string,
   ): Promise<void> {
     let versionResult: VersionedRowResult | null = null;
     let warnings: string | undefined;
 
     try {
       const outcome = row.table_name
-        ? await this._processTaggedRow(row, importDate, result)
-        : await this._processMatchedRow(row, importDate, result);
+        ? await this._processTaggedRow(row, importDate, result, ctx)
+        : await this._processMatchedRow(row, importDate, result, ctx);
 
       versionResult = outcome.versionResult;
       warnings = outcome.warnings;
 
+      // Eventual counter: rows where expediente matches the form expediente key.
+      if (ctx.es_eventual && versionResult !== null) {
+        result.summary.eventual_matched = (result.summary.eventual_matched ?? 0) + 1;
+
+        // Duplicate to eventuales table via upsert (same expediente key).
+        // If the row already matched into eventuales, skip the duplicate.
+        if (versionResult.table_name !== 'eventuales') {
+          try {
+            await this.versioningService.upsertGenericRow(
+              'eventuales',
+              row.expediente!,
+              this._toRowData(row, ctx),
+            );
+          } catch (dupErr) {
+            // Best-effort: log but don't fail the main pipeline
+            result.summary.warnings.push(
+              `Eventual duplicate failed for expediente '${row.expediente}': ${String(dupErr)}`,
+            );
+          }
+        }
+      }
+
       // ── Audit log (ALWAYS — for every row, every outcome) ────────────────
       await this.historicoService.log({
-        expediente:            row.expediente,
+        expediente:            row.expediente ?? formExpediente ?? undefined,
         nombre:                row.nombre,
         referente:             row.referente,
         monto_total:           row.monto_total,
@@ -615,7 +690,7 @@ export class ImportExcelService {
 
       // Best-effort audit log even on row error
       await this.historicoService.log({
-        expediente:            row.expediente,
+        expediente:            row.expediente ?? formExpediente ?? undefined,
         nombre:                row.nombre,
         referente:             row.referente,
         monto_total:           row.monto_total,
@@ -642,6 +717,7 @@ export class ImportExcelService {
     row: ImportRow,
     importDate: Date,
     result: ImportResult,
+    ctx: RowWriteContext,
   ): Promise<{ versionResult: VersionedRowResult | null; warnings?: string }> {
     const tableName = row.table_name!;
 
@@ -656,7 +732,7 @@ export class ImportExcelService {
       const { id, version } = await this.versioningService.upsertGenericRow(
         tableName,
         row.expediente,
-        this._toRowData(row),
+        this._toRowData(row, ctx),
       );
       const versionResult = this.versioningService.buildResult(
         tableName,
@@ -704,7 +780,7 @@ export class ImportExcelService {
       );
       const { id, version } = await this.versioningService.createVersionedRow(
         tableName,
-        { ...this._toRowData(row), expediente, person_id: row.person_id },
+        { ...this._toRowData(row, ctx), expediente, person_id: row.person_id },
         latestVersion + 1,
         'INFORME_DIARIO',
       );
@@ -736,6 +812,7 @@ export class ImportExcelService {
     row: ImportRow,
     importDate: Date,
     result: ImportResult,
+    ctx: RowWriteContext,
   ): Promise<{ versionResult: VersionedRowResult | null; warnings?: string }> {
     const match = await this.matchingService.match(row);
 
@@ -747,7 +824,7 @@ export class ImportExcelService {
           const { id, version } = await this.versioningService.upsertGenericRow(
             match.table_name,
             row.expediente!,
-            this._toRowData(row),
+            this._toRowData(row, ctx),
           );
           const versionResult = this.versioningService.buildResult(
             match.table_name,
@@ -786,7 +863,7 @@ export class ImportExcelService {
           );
           const { id, version } = await this.versioningService.createVersionedRow(
             match.table_name,
-            { ...this._toRowData(row), person_id: personId },
+            { ...this._toRowData(row, ctx), person_id: personId },
             latestVersion + 1,
             'INFORME_DIARIO',
           );
@@ -833,7 +910,7 @@ export class ImportExcelService {
           );
           const { id, version } = await this.versioningService.createVersionedRow(
             match.table_name,
-            { ...this._toRowData(row), expediente, person_id: personId },
+            { ...this._toRowData(row, ctx), expediente, person_id: personId },
             latestVersion + 1,
             'INFORME_DIARIO',
           );
@@ -897,8 +974,9 @@ export class ImportExcelService {
   /**
    * Converts an ImportRow into a plain data object suitable for Prisma create/upsert.
    * Excludes `fecha`, `raw`, `table_name` and `person_id` (pipeline-internal fields).
+   * `ctx` carries the effective `fecha_carga`.
    */
-  private _toRowData(row: ImportRow): Record<string, unknown> {
+  private _toRowData(row: ImportRow, ctx: RowWriteContext): Record<string, unknown> {
     return {
       expediente:   row.expediente,
       nombre:       row.nombre   ?? null,
@@ -907,6 +985,7 @@ export class ImportExcelService {
       monto_total:  row.monto_total,
       monto_parcial: row.monto_parcial,
       saldo:        row.saldo,
+      fecha_carga:  ctx.fecha_carga,
     };
   }
 }

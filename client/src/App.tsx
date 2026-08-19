@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AuthGuard } from './components/auth/AuthGuard';
 import { LoginPage } from './components/auth/LoginPage';
+import { ImportPage } from './components/ImportPage';
 import UserMenu from './components/auth/UserMenu';
 import InteractiveMap from './components/Map.js';
 import Sidebar from './components/Sidebar.js';
@@ -38,10 +39,18 @@ function MapApp() {
     <div className="flex flex-col h-screen w-full bg-[#09090b] text-slate-100 font-sans overflow-hidden select-none border-4 border-[#18181b]">
       <header className="p-4 lg:p-8 border-b border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-end bg-[#0c0c0e] shrink-0">
         <div>
-          <p className="text-amber-500 font-mono text-xs tracking-widest uppercase mb-1">Sistema de Información Geográfica</p>
+          <p className="text-gov-gold font-mono text-xs tracking-widest uppercase mb-1">Sistema de Información Geográfica</p>
           <h1 className="text-2xl lg:text-4xl font-serif tracking-tight font-light">Observatorio La Rioja</h1>
         </div>
-        <UserMenu />
+        <div className="flex items-center gap-4">
+          <Link
+            to="/import"
+            className="border border-gov-gold/50 px-4 py-2 text-xs font-mono uppercase tracking-wider text-gov-gold-light transition-colors hover:border-gov-gold-light hover:bg-gov-gold/10 hover:text-gov-gold-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0e]"
+          >
+            Importar datos
+          </Link>
+          <UserMenu />
+        </div>
       </header>
       
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
@@ -88,6 +97,11 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/import" element={
+            <AuthGuard>
+              <ImportPage />
+            </AuthGuard>
+          } />
           <Route path="/" element={
             <AuthGuard>
               <MapApp />

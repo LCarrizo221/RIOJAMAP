@@ -123,10 +123,11 @@ router.post('/login', async (req, res) => {
     );
 
     // Setear httpOnly cookie
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('riojamap_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'lax' : 'strict',
       maxAge: 24 * 60 * 60 * 1000, // 24 horas
       path: '/',
     });
@@ -151,7 +152,13 @@ router.post('/login', async (req, res) => {
 // POST /api/auth/logout (pública)
 router.post('/logout', async (req, res) => {
   try {
-    res.clearCookie('riojamap_token', { path: '/' });
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.clearCookie('riojamap_token', {
+      path: '/',
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'lax' : 'strict',
+    });
     res.json({ message: 'Logged out successfully' });
   } catch (error) {
     console.error('Logout error:', error);

@@ -5,4 +5,8 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-gov-navy: #2c5282;
+  --color-gov-gold: #d4af37;
+  --color-gov-navy-light: #4a90d9;
+  --color-gov-gold-light: #e6c84d;
 }

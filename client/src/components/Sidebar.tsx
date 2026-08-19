@@ -36,7 +36,7 @@ export default function Sidebar({ department, obrasCount, montoTotal }: SidebarP
             className="flex flex-col gap-6 h-full"
           >
             <div className="border-b border-white/5 pb-4">
-              <h2 className="text-xs font-mono text-amber-500 uppercase tracking-widest mb-1">Departamento</h2>
+              <h2 className="text-xs font-mono text-gov-gold uppercase tracking-widest mb-1">Departamento</h2>
               <p className="text-3xl font-serif italic text-white">
                 {(department.departamento ?? '').split(' ').map(word => 
                   word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -46,13 +46,13 @@ export default function Sidebar({ department, obrasCount, montoTotal }: SidebarP
 
             {/* Obra-related info */}
             <div className="grid grid-cols-1 gap-4">
-              <div className="bg-[#141417] p-4 border border-white/5 rounded-sm">
+              <div className="bg-gov-navy/20 p-4 border border-gov-navy/30 rounded-sm">
                 <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Total Obras</p>
                 <p className="text-xl lg:text-2xl font-mono text-slate-100">{obrasCount ?? 0}</p>
               </div>
-              <div className="bg-[#141417] p-4 border border-white/5 rounded-sm">
+              <div className="bg-gov-navy/20 p-4 border border-gov-navy/30 rounded-sm">
                 <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Monto Total</p>
-                <p className="text-xl lg:text-2xl font-mono text-amber-400">
+                <p className="text-xl lg:text-2xl font-mono text-gov-gold-light">
                   {montoTotal ? formatCurrency(montoTotal) : '$ 0'}
                 </p>
               </div>
@@ -74,7 +74,7 @@ export default function Sidebar({ department, obrasCount, montoTotal }: SidebarP
             className="flex flex-col items-center justify-center text-center h-full p-6"
           >
             <div className="w-16 h-16 rounded-full border border-white/10 bg-[#141417] flex items-center justify-center mb-4">
-              <MapPin className="w-8 h-8 text-amber-500/50" />
+              <MapPin className="w-8 h-8 text-gov-gold/50" />
             </div>
             <p className="text-slate-500 font-mono text-xs uppercase tracking-widest max-w-[200px] leading-relaxed">
               Seleccione un departamento en el mapa para ver sus indicadores

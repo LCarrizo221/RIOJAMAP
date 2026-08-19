@@ -9,7 +9,7 @@ import { z } from 'zod';
 // ─── Base Table Row Schema (DRY) ──────────────────────────────────────────────
 
 /**
- * Shared field set for all 14 import tables.
+ * Shared field set for all 15 import tables.
  * Type1 tables re-export this as named aliases.
  * Type2 tables extend it with `person_id`.
  */
@@ -99,9 +99,12 @@ export const importRowSchema = z.object({
 /**
  * POST /api/import request body (text fields only).
  * Multer handles binary file validation — z.instanceof(File) is intentionally absent.
+ * `nro_expediente`/`fecha_carga` enable eventual import mode (see eventual-movements spec).
  */
 export const importRequestSchema = z.object({
   import_date: z.coerce.date().optional(),
+  nro_expediente: z.string().optional(),
+  fecha_carga: z.coerce.date().optional(),
 });
 
 /**
@@ -123,6 +126,8 @@ export const importSummarySchema = z.object({
   matched_by_name: z.number(),
   unmatched: z.number(),
   ambiguous: z.number(),
+  /** Rows duplicated to the eventuales table during an eventual import — optional. */
+  eventual_matched: z.number().optional(),
   warnings: z.array(z.string()),
 });
 
@@ -164,6 +169,44 @@ export const versionHistoryResponseSchema = z.object({
   versions: z.array(versionHistoryRowSchema),
 });
 
+// ─── Table List Views (GET /api/import/tables/:tableName) ─────────────────────
+
+/** `fecha_carga` is an ISO day (YYYY-MM-DD) — TableQueryService expands it to [startOfDay, endOfDay]. */
+export const tableListQuerySchema = z.object({
+  expediente: z.string().optional(),
+  nombre: z.string().optional(),
+  fecha_carga: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'fecha_carga must be a valid day (YYYY-MM-DD)').optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+});
+
+/** GET /api/import/tables/:tableName response. */
+export const tableListResponseSchema = z.object({
+  table_name: z.string(),
+  data: z.array(z.record(z.unknown())),
+  pagination: z.object({ page: z.number(), limit: z.number(), total: z.number(), totalPages: z.number() }),
+});
+
+// ─── Manual Row Creation (POST /api/import/tables/:tableName/rows) ─────────────
+
+/**
+ * Body for manual ADMIN row creation: base row fields minus
+ * id/version/imported_from/createdAt (server-managed), plus optional
+ * `fecha_carga` (defaults to current date).
+ * `person_id` is required for Type2 tables — enforced in the controller.
+ */
+export const createTableRowSchema = z.object({
+  expediente: z.string().min(1),
+  nombre: z.string().nullable().optional(),
+  referente: z.string().nullable().optional(),
+  detalle: z.string().nullable().optional(),
+  monto_total: z.number().default(0),
+  monto_parcial: z.number().default(0),
+  saldo: z.number().default(0),
+  fecha_carga: z.coerce.date().optional(),
+  person_id: z.number().optional(),
+});
+
 // ─── Inferred TypeScript Types ────────────────────────────────────────────────
 
 export type ImportRow = z.infer<typeof importRowSchema>;
@@ -174,4 +217,7 @@ export type ImportResponse = z.infer<typeof importResponseSchema>;
 export type ReportesHistoricoRow = z.infer<typeof reportesHistoricoSchema>;
 export type VersionHistoryRow = z.infer<typeof versionHistoryRowSchema>;
 export type VersionHistoryResponse = z.infer<typeof versionHistoryResponseSchema>;
+export type TableListQuery = z.infer<typeof tableListQuerySchema>;
+export type TableListResponse = z.infer<typeof tableListResponseSchema>;
+export type CreateTableRow = z.infer<typeof createTableRowSchema>;
 export type Person = z.infer<typeof personSchema>;

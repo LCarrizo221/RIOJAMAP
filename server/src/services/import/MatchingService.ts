@@ -33,6 +33,7 @@ import { PrismaClient } from '@prisma/client';
 import { GENERIC_TABLES, PERSON_TABLES } from './types.js';
 import type { ImportRow, MatchResult } from './types.js';
 import type { NameNormalizationService } from './NameNormalizationService.js';
+import { ExpedienteNormalizationService } from './ExpedienteNormalizationService.js';
 
 interface CandidateRow {
   tableName: string;
@@ -51,8 +52,11 @@ export class MatchingService {
    */
   async match(row: ImportRow): Promise<MatchResult> {
     // ── Step 1: Expediente matching ──────────────────────────────────────────
-    if (row.expediente && row.expediente.trim() !== '') {
-      const expResult = await this._matchByExpediente(row.expediente.trim());
+    const normalizedExpediente = row.expediente
+      ? new ExpedienteNormalizationService().normalize(row.expediente) ?? row.expediente
+      : undefined;
+    if (normalizedExpediente && normalizedExpediente.trim() !== '') {
+      const expResult = await this._matchByExpediente(normalizedExpediente.trim());
       if (expResult !== null) return expResult;
     }
 
