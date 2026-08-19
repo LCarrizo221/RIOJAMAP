@@ -37,7 +37,7 @@ export function LoginPage() {
       <div className="w-full max-w-md bg-[#0c0c0e] rounded-lg border border-white/10 p-8">
         {/* Header */}
         <div className="mb-8">
-          <p className="text-amber-500 font-mono text-xs tracking-widest uppercase mb-2">
+          <p className="text-gov-gold font-mono text-xs tracking-widest uppercase mb-2">
             Observatorio La Rioja
           </p>
           <h1 className="text-2xl font-serif text-slate-100">
@@ -62,7 +62,7 @@ export function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isLoading}
-              className="w-full bg-[#09090b] border border-white/10 rounded px-4 py-3 text-slate-100 font-mono text-sm focus:outline-none focus:border-amber-500/50 transition-colors disabled:opacity-50"
+              className="w-full bg-[#09090b] border border-white/10 rounded px-4 py-3 text-slate-100 font-mono text-sm focus:outline-none focus:border-gov-gold/50 transition-colors disabled:opacity-50"
               placeholder="tu@email.com"
             />
           </div>
@@ -82,7 +82,7 @@ export function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={isLoading}
-              className="w-full bg-[#09090b] border border-white/10 rounded px-4 py-3 text-slate-100 font-mono text-sm focus:outline-none focus:border-amber-500/50 transition-colors disabled:opacity-50"
+              className="w-full bg-[#09090b] border border-white/10 rounded px-4 py-3 text-slate-100 font-mono text-sm focus:outline-none focus:border-gov-gold/50 transition-colors disabled:opacity-50"
               placeholder="••••••••"
             />
           </div>
@@ -98,7 +98,7 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-amber-500 hover:bg-amber-400 disabled:bg-amber-500/50 text-[#09090b] font-mono text-sm font-semibold uppercase tracking-wider py-3 rounded transition-colors disabled:cursor-not-allowed"
+            className="w-full bg-gov-gold hover:bg-gov-gold-light disabled:bg-gov-gold/50 text-[#09090b] font-mono text-sm font-semibold uppercase tracking-wider py-3 rounded transition-colors disabled:cursor-not-allowed"
           >
             {isLoading ? 'Ingresando...' : 'Ingresar'}
           </button>

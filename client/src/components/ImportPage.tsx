@@ -12,7 +12,7 @@ type Status = 'idle' | 'loading' | 'success' | 'error';
 const TAB_CLASSES = (active: boolean) =>
   `px-4 py-2 text-xs font-mono uppercase tracking-wider rounded-t-lg border-b-2 transition-colors ${
     active
-      ? 'text-amber-400 border-amber-500 bg-amber-500/5'
+      ? 'text-gov-gold-light border-gov-gold bg-gov-gold/gov-gold/5'
       : 'text-slate-400 border-transparent hover:text-slate-200'
   }`;
 
@@ -79,7 +79,7 @@ export function ImportPage() {
       <header className="border-b border-white/10 bg-[#0c0c0e] px-4 lg:px-8 py-6">
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-amber-500 font-mono text-xs tracking-widest uppercase mb-1">
+            <p className="text-gov-gold font-mono text-xs tracking-widest uppercase mb-1">
               Importación de datos
             </p>
             <h1 className="text-2xl lg:text-3xl font-serif tracking-tight font-light">
@@ -92,7 +92,7 @@ export function ImportPage() {
             </span>
             <Link
               to="/"
-              className="text-xs font-mono uppercase tracking-wider text-slate-400 hover:text-amber-500 transition-colors"
+              className="text-xs font-mono uppercase tracking-wider text-slate-400 hover:text-gov-gold transition-colors"
             >
               ← Volver al mapa
             </Link>
@@ -205,7 +205,7 @@ function UploadPanel({
               accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               onChange={onFileChange}
               disabled={status === 'loading'}
-              className="block w-full text-sm font-mono text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-amber-500 file:text-[#09090b] file:font-semibold file:font-mono file:uppercase file:tracking-wider file:cursor-pointer hover:file:bg-amber-400 file:transition-colors disabled:opacity-50"
+              className="block w-full text-sm font-mono text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-gov-gold file:text-[#09090b] file:font-semibold file:font-mono file:uppercase file:tracking-wider file:cursor-pointer hover:file:bg-gov-gold-light file:transition-colors disabled:opacity-50"
             />
             {file && (
               <p className="mt-2 text-xs font-mono text-slate-500">
@@ -231,7 +231,7 @@ function UploadPanel({
                 onChange={(e) => onNroExpedienteChange(e.target.value)}
                 disabled={status === 'loading'}
                 placeholder="Ej: H11-00388-7-26"
-                className="block w-full bg-[#141417] border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200 placeholder:text-slate-600 focus:border-amber-500/50 focus:outline-none disabled:opacity-50"
+                className="block w-full bg-[#141417] border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200 placeholder:text-slate-600 focus:border-gov-gold/50 focus:outline-none disabled:opacity-50"
               />
               <p className="mt-1 text-[11px] font-mono text-slate-600">
                 Si se completa, las filas con ese expediente se marcan como eventuales.
@@ -250,7 +250,7 @@ function UploadPanel({
                 value={fechaCarga}
                 onChange={(e) => onFechaCargaChange(e.target.value)}
                 disabled={status === 'loading'}
-                className="block w-full bg-[#141417] border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200 focus:border-amber-500/50 focus:outline-none disabled:opacity-50"
+                className="block w-full bg-[#141417] border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200 focus:border-gov-gold/50 focus:outline-none disabled:opacity-50"
               />
               <p className="mt-1 text-[11px] font-mono text-slate-600">
                 Por defecto usa la fecha actual.
@@ -263,7 +263,7 @@ function UploadPanel({
             <button
               type="submit"
               disabled={status === 'loading' || !file}
-              className="bg-amber-500 hover:bg-amber-400 disabled:bg-amber-500/30 disabled:cursor-not-allowed text-[#09090b] font-mono text-sm font-semibold uppercase tracking-wider px-6 py-3 rounded transition-colors"
+              className="bg-gov-gold hover:bg-gov-gold-light disabled:bg-gov-gold/30 disabled:cursor-not-allowed text-[#09090b] font-mono text-sm font-semibold uppercase tracking-wider px-6 py-3 rounded transition-colors"
             >
               {status === 'loading' ? 'Subiendo…' : 'Subir e importar'}
             </button>
@@ -307,7 +307,7 @@ function ImportResult({ result }: { result: ImportResponse }) {
     { label: 'Total filas', value: s.total_rows, color: 'text-slate-100' },
     { label: 'Match expediente', value: s.matched_by_expediente, color: 'text-emerald-400' },
     { label: 'Match nombre', value: s.matched_by_name, color: 'text-sky-400' },
-    { label: 'Sin match', value: s.unmatched, color: 'text-amber-400' },
+    { label: 'Sin match', value: s.unmatched, color: 'text-gov-gold-light' },
     { label: 'Ambiguos', value: s.ambiguous, color: 'text-red-400' },
     { label: 'Eventuales', value: s.eventual_matched ?? 0, color: 'text-orange-400' },
   ];
@@ -339,7 +339,7 @@ function ImportResult({ result }: { result: ImportResponse }) {
       {/* Warnings */}
       {s.warnings.length > 0 && (
         <div className="px-6 lg:px-8 py-5 border-t border-white/10">
-          <p className="text-xs font-mono text-amber-500 uppercase tracking-widest mb-3">
+          <p className="text-xs font-mono text-gov-gold uppercase tracking-widest mb-3">
             Advertencias ({s.warnings.length})
           </p>
           <ul className="space-y-1 max-h-48 overflow-y-auto">

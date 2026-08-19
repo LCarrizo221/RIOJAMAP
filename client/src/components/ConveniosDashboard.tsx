@@ -98,7 +98,7 @@ export default function ConveniosDashboard({ municipio }: ConveniosDashboardProp
           <select
             value={selectedReferente}
             onChange={(e) => setSelectedReferente(e.target.value)}
-            className="bg-[#141417] border border-white/10 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-amber-500/50"
+            className="bg-[#141417] border border-white/10 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-gov-gold/50"
           >
             <option value="">Todos</option>
             {referentes.map((ref) => (
@@ -158,7 +158,7 @@ export default function ConveniosDashboard({ municipio }: ConveniosDashboardProp
                     <p className="text-xs font-mono text-green-400">{formatCurrency(c.monto_parcial)}</p>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <p className="text-xs font-mono text-amber-400">{formatCurrency(c.saldo)}</p>
+                    <p className="text-xs font-mono text-gov-gold-light">{formatCurrency(c.saldo)}</p>
                   </td>
                 </tr>
               ))}

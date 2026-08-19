@@ -50,14 +50,14 @@ function CustomZoomControl() {
     <div className="absolute top-4 right-4 z-[400] flex flex-col gap-2">
       <button 
         onClick={(e) => { e.stopPropagation(); map.zoomIn(); }}
-        className="w-10 h-10 bg-[#0c0c0e]/90 border border-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#18181b] hover:border-amber-500/50 backdrop-blur-md transition-all shadow-xl pointer-events-auto"
+        className="w-10 h-10 bg-[#0c0c0e]/90 border border-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#18181b] hover:border-gov-gold/50 backdrop-blur-md transition-all shadow-xl pointer-events-auto"
         title="Acercar"
       >
         <Plus className="w-5 h-5" />
       </button>
       <button 
         onClick={(e) => { e.stopPropagation(); map.zoomOut(); }}
-        className="w-10 h-10 bg-[#0c0c0e]/90 border border-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#18181b] hover:border-amber-500/50 backdrop-blur-md transition-all shadow-xl pointer-events-auto"
+        className="w-10 h-10 bg-[#0c0c0e]/90 border border-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#18181b] hover:border-gov-gold/50 backdrop-blur-md transition-all shadow-xl pointer-events-auto"
         title="Alejar"
       >
         <Minus className="w-5 h-5" />
@@ -183,7 +183,7 @@ export default function InteractiveMap({ onHover, onClick, selectedDept }: MapPr
           <button 
             onClick={() => setShowStyleMenu(!showStyleMenu)}
             onBlur={() => setTimeout(() => setShowStyleMenu(false), 200)}
-            className="h-10 px-4 bg-[#0c0c0e]/90 border border-white/10 rounded-full flex items-center justify-center gap-2 text-slate-300 hover:text-white hover:bg-[#18181b] hover:border-amber-500/50 backdrop-blur-md transition-all shadow-xl pointer-events-auto cursor-pointer"
+            className="h-10 px-4 bg-[#0c0c0e]/90 border border-white/10 rounded-full flex items-center justify-center gap-2 text-slate-300 hover:text-white hover:bg-[#18181b] hover:border-gov-gold/50 backdrop-blur-md transition-all shadow-xl pointer-events-auto cursor-pointer"
           >
             <Layers className="w-4 h-4" />
             <span className="text-xs font-mono uppercase tracking-widest font-semibold hidden sm:inline">
@@ -195,19 +195,19 @@ export default function InteractiveMap({ onHover, onClick, selectedDept }: MapPr
             <div className="absolute top-full left-0 mt-2 w-36 sm:w-40 bg-[#0c0c0e]/95 border border-white/10 rounded-xl overflow-hidden shadow-2xl backdrop-blur-md flex flex-col py-1 pointer-events-auto">
               <button 
                 onClick={() => setMapStyle('satellite')}
-                className={`px-4 py-2 text-left text-xs font-mono uppercase tracking-widest transition-colors ${mapStyle === 'satellite' ? 'text-amber-500 bg-amber-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
+                className={`px-4 py-2 text-left text-xs font-mono uppercase tracking-widest transition-colors ${mapStyle === 'satellite' ? 'text-gov-gold bg-gov-gold/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
               >
                 Satélite
               </button>
               <button 
                 onClick={() => setMapStyle('terrain')}
-                className={`px-4 py-2 text-left text-xs font-mono uppercase tracking-widest transition-colors ${mapStyle === 'terrain' ? 'text-amber-500 bg-amber-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
+                className={`px-4 py-2 text-left text-xs font-mono uppercase tracking-widest transition-colors ${mapStyle === 'terrain' ? 'text-gov-gold bg-gov-gold/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
               >
                 Relieve
               </button>
               <button 
                 onClick={() => setMapStyle('minimal')}
-                className={`px-4 py-2 text-left text-xs font-mono uppercase tracking-widest transition-colors ${mapStyle === 'minimal' ? 'text-amber-500 bg-amber-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
+                className={`px-4 py-2 text-left text-xs font-mono uppercase tracking-widest transition-colors ${mapStyle === 'minimal' ? 'text-gov-gold bg-gov-gold/10' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}
               >
                 Minimalista
               </button>
@@ -219,11 +219,11 @@ export default function InteractiveMap({ onHover, onClick, selectedDept }: MapPr
       {/* Map Legend */}
       <div className="absolute bottom-4 left-4 flex flex-col gap-2 z-[400] bg-[#0c0c0e]/80 p-3 rounded border border-white/10 backdrop-blur-md shadow-xl pointer-events-none">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-amber-500/35 border-2 border-amber-300"></div>
+          <div className="w-3 h-3 bg-gov-gold/35 border-2 border-amber-300"></div>
           <span className="text-[10px] text-slate-200 uppercase tracking-widest font-mono">Seleccionado</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-black/10 border-2 border-amber-500"></div>
+          <div className="w-3 h-3 bg-black/10 border-2 border-gov-gold"></div>
           <span className="text-[10px] text-slate-200 uppercase tracking-widest font-mono">Otras Regiones</span>
         </div>
       </div>

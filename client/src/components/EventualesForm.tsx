@@ -90,15 +90,15 @@ export default function EventualesForm({ onCreated }: { onCreated?: () => void }
   };
 
   const inputClass =
-    'w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50';
+    'w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50';
 
   const selectClass =
-    'w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50 appearance-none';
+    'w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50 appearance-none';
 
   return (
     <div className="bg-[#0c0c0e] border border-white/10 rounded-xl overflow-hidden">
       <div className="border-b border-white/10 p-4 lg:p-6">
-        <p className="text-[10px] font-mono text-amber-500 uppercase tracking-widest mb-1">
+        <p className="text-[10px] font-mono text-gov-gold uppercase tracking-widest mb-1">
           Carga manual
         </p>
         <h2 className="text-xl font-serif font-light text-white">Alta de eventual</h2>
@@ -305,7 +305,7 @@ export default function EventualesForm({ onCreated }: { onCreated?: () => void }
           <button
             type="submit"
             disabled={submitting}
-            className="bg-amber-500 hover:bg-amber-400 disabled:bg-amber-500/30 disabled:cursor-not-allowed text-[#09090b] font-mono text-sm font-semibold uppercase tracking-wider px-5 py-2 rounded transition-colors inline-flex items-center gap-2"
+            className="bg-gov-gold hover:bg-gov-gold-light disabled:bg-gov-gold/30 disabled:cursor-not-allowed text-[#09090b] font-mono text-sm font-semibold uppercase tracking-wider px-5 py-2 rounded transition-colors inline-flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
             {submitting ? 'Guardando…' : 'Guardar'}

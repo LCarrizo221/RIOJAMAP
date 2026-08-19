@@ -82,14 +82,14 @@ export default function AddRowModal({ tableName, isType2, onClose, onCreated }: 
   };
 
   const inputClass =
-    'w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-amber-500/50';
+    'w-full bg-[#141417] border border-white/10 rounded-lg px-3 py-2 text-slate-100 text-sm focus:outline-none focus:border-gov-gold/50';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0c0c0e] border border-white/10 rounded-xl shadow-2xl">
         <div className="sticky top-0 bg-[#0c0c0e]/95 backdrop-blur-sm border-b border-white/10 p-4 lg:p-6 flex justify-between items-start">
           <div>
-            <p className="text-[10px] font-mono text-amber-500 uppercase tracking-widest mb-1">
+            <p className="text-[10px] font-mono text-gov-gold uppercase tracking-widest mb-1">
               Alta manual · {tableName}
             </p>
             <h2 className="text-xl font-serif font-light text-white">Agregar fila</h2>
@@ -177,7 +177,7 @@ export default function AddRowModal({ tableName, isType2, onClose, onCreated }: 
             <button
               type="submit"
               disabled={submitting}
-              className="bg-amber-500 hover:bg-amber-400 disabled:bg-amber-500/30 disabled:cursor-not-allowed text-[#09090b] font-mono text-sm font-semibold uppercase tracking-wider px-5 py-2 rounded transition-colors"
+              className="bg-gov-gold hover:bg-gov-gold-light disabled:bg-gov-gold/30 disabled:cursor-not-allowed text-[#09090b] font-mono text-sm font-semibold uppercase tracking-wider px-5 py-2 rounded transition-colors"
             >
               {submitting ? 'Guardando…' : 'Guardar'}
             </button>

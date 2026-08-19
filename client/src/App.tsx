@@ -39,13 +39,13 @@ function MapApp() {
     <div className="flex flex-col h-screen w-full bg-[#09090b] text-slate-100 font-sans overflow-hidden select-none border-4 border-[#18181b]">
       <header className="p-4 lg:p-8 border-b border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-end bg-[#0c0c0e] shrink-0">
         <div>
-          <p className="text-amber-500 font-mono text-xs tracking-widest uppercase mb-1">Sistema de Información Geográfica</p>
+          <p className="text-gov-gold font-mono text-xs tracking-widest uppercase mb-1">Sistema de Información Geográfica</p>
           <h1 className="text-2xl lg:text-4xl font-serif tracking-tight font-light">Observatorio La Rioja</h1>
         </div>
         <div className="flex items-center gap-4">
           <Link
             to="/import"
-            className="border border-amber-500/50 px-4 py-2 text-xs font-mono uppercase tracking-wider text-amber-400 transition-colors hover:border-amber-400 hover:bg-amber-500/10 hover:text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0e]"
+            className="border border-gov-gold/50 px-4 py-2 text-xs font-mono uppercase tracking-wider text-gov-gold-light transition-colors hover:border-gov-gold-light hover:bg-gov-gold/10 hover:text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0e]"
           >
             Importar datos
           </Link>

@@ -24,7 +24,7 @@ const RESTO_TABLES = [
   'misael',
 ] as const;
 
-const SECTION_HEADER = 'text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1 px-2';
+const SECTION_HEADER = 'text-[10px] font-mono text-gov-gold uppercase tracking-widest mb-1 px-2';
 const SEPARATOR = 'border-t border-white/5 my-2';
 
 function TableButton({
@@ -41,8 +41,8 @@ function TableButton({
       onClick={onClick}
       className={`pl-4 w-full text-left px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider rounded-lg border transition-colors ${
         active
-          ? 'bg-amber-500 text-[#09090b] border-amber-500 font-semibold'
-          : 'bg-[#141417] text-slate-400 border-white/10 hover:border-amber-500/40 hover:text-slate-200'
+          ? 'bg-gov-gold text-[#09090b] border-gov-gold font-semibold'
+          : 'bg-[#141417] text-slate-400 border-white/10 hover:border-gov-gold/40 hover:text-slate-200'
       }`}
     >
       {table}

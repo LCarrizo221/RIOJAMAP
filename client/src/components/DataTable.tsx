@@ -89,7 +89,7 @@ export default function DataTable({ tableName, isAdmin, readonly = false }: Data
   };
 
   const filterClass =
-    'bg-[#141417] border border-white/10 rounded-lg px-3 py-1.5 text-slate-100 text-xs placeholder:text-slate-600 focus:outline-none focus:border-amber-500/50 w-40';
+    'bg-[#141417] border border-white/10 rounded-lg px-3 py-1.5 text-slate-100 text-xs placeholder:text-slate-600 focus:outline-none focus:border-gov-gold/50 w-40';
 
   return (
     <div className="bg-[#141417] border border-white/5 rounded-lg overflow-hidden">
@@ -122,7 +122,7 @@ export default function DataTable({ tableName, isAdmin, readonly = false }: Data
         {canAdd && (
           <button
             onClick={() => setModalOpen(true)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-[#09090b] text-xs font-mono font-semibold uppercase tracking-wider rounded-lg transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 bg-gov-gold hover:bg-gov-gold-light text-[#09090b] text-xs font-mono font-semibold uppercase tracking-wider rounded-lg transition-colors"
           >
             <Plus className="w-3.5 h-3.5" /> Agregar fila
           </button>
